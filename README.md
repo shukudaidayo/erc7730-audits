@@ -92,8 +92,8 @@ The optional `reason` classifies it as `compatible-not-included`,
 
 1. Copy `auditor/profile.example.json` to `auditor/profile.json` and fill in
    the Ethereum account that will sign attestations.
-2. Install the repository's dependencies. Use an isolated Python environment
-   for the Python tooling:
+2. Install the repository's dependencies. The Python tooling requires Python
+   3.13 or newer; use an isolated environment if possible:
 
 ```bash
 python3 -m pip install --requirement requirements.txt

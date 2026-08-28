@@ -6,8 +6,8 @@ Report a suspected incorrect audit, forged attestation, identity mismatch, or
 compromised signing key privately before public disclosure when doing so would
 reduce user risk.
 
-Twitter DM: @shukudaidayo
-Email: shukudaidayo@protonmail.com
+- Twitter DM: @shukudaidayo
+- Email: shukudaidayo@protonmail.com
 
 Include the descriptor hash, audit path, affected deployment, and a concise
 description of the problem. Do not include private keys or seed phrases.
