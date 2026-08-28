@@ -215,11 +215,11 @@ optional, and it does not require a separate deployment-survey artifact.
   the raw attestation export is present and verified.
 - Keep approved records append-only. Record each later lifecycle change as a
   new event without editing the original audit or attestation.
-- Revoke through EAS if approval is withdrawn or the signer is compromised, and
-  record the revocation in a withdrawal event.
+- Revoke the attestation through EAS if the auditor no longer endorses the
+  approval or the signer is compromised, and record it in a revocation event.
 - Use a supersession event when a newer approved dossier should be preferred,
   but the earlier approval is not known to be wrong.
 - Use a correction event to state corrected information about an existing
   dossier file without editing that file. The correction must not change the
-  descriptor, evidence, or approval conclusion. Withdraw the approval instead
+  descriptor, evidence, or approval conclusion. Revoke the attestation instead
   if the correction would change its claim.

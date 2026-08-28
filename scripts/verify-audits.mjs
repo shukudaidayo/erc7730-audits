@@ -283,11 +283,11 @@ function verifyAuditEvents(audit, dossier, auditPath, attestationDetails) {
       }
     }
 
-    if (["withdrawal", "supersession"].includes(event.type) && audit.status !== "approved") {
+    if (["revocation", "supersession"].includes(event.type) && audit.status !== "approved") {
       fail(eventPath, `${event.type} events require an approved base audit`);
     }
 
-    if (event.type === "withdrawal") {
+    if (event.type === "revocation") {
       if (event.revocation.attestationUID.toLowerCase() !== audit.attestation?.uid?.toLowerCase()) {
         fail(eventPath, "revoked attestation UID does not match audit.json");
       }
@@ -366,16 +366,16 @@ function verifyAuditEvents(audit, dossier, auditPath, attestationDetails) {
   }
 
   let sawSupersession = false;
-  let sawWithdrawal = false;
+  let sawRevocation = false;
   for (const event of sortAuditEvents(events)) {
     if (event.type === "supersession") {
       if (sawSupersession) fail(auditPath, "audit has more than one supersession event");
-      if (sawWithdrawal) fail(auditPath, "a withdrawn audit cannot later be superseded");
+      if (sawRevocation) fail(auditPath, "a revoked audit cannot later be superseded");
       sawSupersession = true;
     }
-    if (event.type === "withdrawal") {
-      if (sawWithdrawal) fail(auditPath, "audit has more than one withdrawal event");
-      sawWithdrawal = true;
+    if (event.type === "revocation") {
+      if (sawRevocation) fail(auditPath, "audit has more than one revocation event");
+      sawRevocation = true;
     }
   }
 

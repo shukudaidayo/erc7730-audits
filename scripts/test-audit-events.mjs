@@ -15,17 +15,27 @@ const supersession = {
   type: "supersession",
   recordedAt: "2026-08-28T03:00:00Z",
 };
-const withdrawal = {
-  type: "withdrawal",
+const revocation = {
+  type: "revocation",
   recordedAt: "2026-08-28T04:00:00Z",
 };
-const events = [withdrawal, correction, supersession];
+const events = [revocation, correction, supersession];
 
-assert.deepEqual(sortAuditEvents(events), [correction, supersession, withdrawal]);
+assert.deepEqual(sortAuditEvents(events), [correction, supersession, revocation]);
 assert.equal(effectiveAuditStatus("approved", []), "approved");
 assert.equal(effectiveAuditStatus("approved", [correction]), "approved");
 assert.equal(effectiveAuditStatus("approved", [supersession]), "superseded");
-assert.equal(effectiveAuditStatus("approved", events), "withdrawn");
+assert.equal(effectiveAuditStatus("approved", events), "revoked");
+assert.equal(effectiveAuditStatus("approved", [revocation]), "revoked");
+const simultaneousEvents = events.map((event) => ({ ...event, recordedAt: revocation.recordedAt }));
+assert.deepEqual(sortAuditEvents(simultaneousEvents).map((event) => event.type),
+  ["correction", "supersession", "revocation"]);
+assert.equal(effectiveAuditStatus("approved", simultaneousEvents), "revoked");
+assert.equal(effectiveAuditStatus("approved", [
+  revocation, { ...supersession, recordedAt: "2026-08-28T05:00:00Z" },
+]), "revoked", "invalid later supersession must never hide a revocation in indexes");
+assert.throws(() => effectiveAuditStatus("approved", [{ ...revocation, type: "withdrawal" }]),
+  /Unknown lifecycle event type/, "legacy event types must not silently leave an audit approved");
 assert.equal(
   latestAuditTimestamp("2026-08-28T01:00:00Z", events),
   "2026-08-28T04:00:00Z",

@@ -18,7 +18,7 @@ If the attestation key may be compromised:
 
 1. Stop issuing attestations with the key.
 2. Revoke affected attestations through Ethereum Attestation Service.
-3. Add a withdrawal event to each affected audit dossier without modifying or
+3. Add a revocation event to each affected audit dossier without modifying or
    deleting the original audit or attestation.
 4. Publish a repository notice identifying the compromised CAIP-10 account and
    the revocation transaction or record.
@@ -27,7 +27,7 @@ If the attestation key may be compromised:
 6. Add a new auditor profile for the replacement key. Do not silently rewrite
    the old identity.
 
-Deleting an attestation JSON file, changing `audit.json`, or adding a withdrawal
+Deleting an attestation JSON file, changing `audit.json`, or adding a revocation
 event is not a cryptographic revocation. The EAS revocation is required.
 
 ## Repository controls

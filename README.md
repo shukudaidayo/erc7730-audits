@@ -45,7 +45,7 @@ provenance, not substitutes for the descriptor hash.
   capture time, and raw-file SHA-256 hash.
 - `dependencies.json` pins any files reached through `includes`.
 - `deployments.json` records source, bytecode, proxy, and state observations.
-- `events/*.json` records a later withdrawal, supersession, or correction
+- `events/*.json` records a later revocation, supersession, or correction
   without changing the original audit files.
 - `<descriptor-slug>.eip155-1-<auditor-address>.json` is the unmodified EAS
   offchain attestation export. Its filename matches the upstream registry.
@@ -71,11 +71,11 @@ Only `approved` means that a positive attestation was issued. Drafts and
 indexes. Omissions that do not make an included format or declared deployment
 incorrect are recorded as explicit coverage limitations.
 
-`withdrawn` and `superseded` are effective lifecycle statuses derived from
-append-only events, not values stored in `audit.json`. A withdrawal means the
-auditor revoked and no longer endorses the approval. A supersession means a
-newer dossier should be preferred without asserting that the old approval was
-wrong. A correction event does not change status.
+`revoked` and `superseded` are effective lifecycle statuses derived from
+append-only events, not values stored in `audit.json`. A revocation means the
+auditor revoked the attestation through EAS and no longer endorses the approval.
+A supersession means a newer dossier should be preferred without asserting that
+the old approval was wrong. A correction event does not change status.
 
 A deployment listed in the descriptor is part of the approval claim and must
 be reviewed. A known relevant deployment that the descriptor does not list is
@@ -251,14 +251,14 @@ to different descriptor content, evidence, or conclusions. A changed descriptor
 gets a new hash directory and a new review. Record later lifecycle changes in
 the dossier's `events/` directory:
 
-- Add a `withdrawal` event after revoking an approval through EAS. Retain the
+- Add a `revocation` event after revoking an attestation through EAS. Retain the
   original attestation and all audit evidence.
 - Add a `supersession` event when a newer dossier should be preferred and the
   old approval is not known to be wrong.
 - Add a `correction` event to state corrected information about an existing
   dossier file without editing that file. Use it only when the correction does
   not change the approval claim. If the correction changes that claim, revoke
-  the attestation and use a withdrawal event instead.
+  the attestation and use a revocation event instead.
 
 Copy the applicable file from `templates/audit-events/`, use a UTC filename in
 the form `YYYYMMDDTHHMMSSZ-<type>.json`, and regenerate the indexes. Do not edit
@@ -271,8 +271,8 @@ policy snapshots.
 
 Revocation must be performed through EAS. Changing a GitHub field alone does
 not cryptographically revoke an attestation. Retain revoked attestations for
-historical verification; the withdrawal event makes the generated status
-`withdrawn`.
+historical verification; the revocation event makes the generated status
+`revoked`.
 
 ## Dependency and upgrade caveats
 
