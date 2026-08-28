@@ -1,6 +1,9 @@
 import { existsSync, readdirSync } from "node:fs";
 import { join } from "node:path";
 
+// Revocation comes last at equal timestamps so supersession cannot hide it.
+const eventOrder = { correction: 0, supersession: 1, revocation: 2 };
+
 export function listAuditEventFiles(dossier) {
   const directory = join(dossier, "events");
   if (!existsSync(directory)) return [];
@@ -11,17 +14,22 @@ export function listAuditEventFiles(dossier) {
 }
 
 export function sortAuditEvents(events) {
+  for (const event of events) {
+    if (!Object.hasOwn(eventOrder, event.type)) {
+      throw new Error(`Unknown lifecycle event type: ${event.type}`);
+    }
+  }
   return [...events].sort((left, right) => (
     left.recordedAt.localeCompare(right.recordedAt)
-    || left.type.localeCompare(right.type)
+    || eventOrder[left.type] - eventOrder[right.type]
   ));
 }
 
 export function effectiveAuditStatus(auditStatus, events) {
   let status = auditStatus;
   for (const event of sortAuditEvents(events)) {
-    if (event.type === "supersession") status = "superseded";
-    if (event.type === "withdrawal") status = "withdrawn";
+    if (event.type === "supersession" && status !== "revoked") status = "superseded";
+    if (event.type === "revocation") status = "revoked";
   }
   return status;
 }

@@ -15,7 +15,7 @@
   "properties": {
     "$schema": { "type": "string" },
     "formatVersion": { "const": "1.0.0" },
-    "type": { "enum": ["withdrawal", "supersession", "correction"] },
+    "type": { "enum": ["revocation", "supersession", "correction"] },
     "descriptorHash": { "$ref": "#/$defs/bytes32" },
     "auditor": { "$ref": "#/$defs/caip10" },
     "recordedAt": { "type": "string", "format": "date-time" },
@@ -85,7 +85,7 @@
   "allOf": [
     {
       "if": {
-        "properties": { "type": { "const": "withdrawal" } },
+        "properties": { "type": { "const": "revocation" } },
         "required": ["type"]
       },
       "then": {

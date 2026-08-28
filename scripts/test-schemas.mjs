@@ -476,9 +476,14 @@ const eventBase = {
   reason: "The audit lifecycle changed after publication.",
 };
 
-const withdrawalEvent = {
+const revocationTemplate = JSON.parse(readFileSync(
+  join(root, "templates/audit-events/revocation.json"), "utf8",
+));
+assert.equal(revocationTemplate.type, "revocation");
+assert(!existsSync(join(root, "templates/audit-events/withdrawal.json")));
+const revocationEvent = {
+  ...revocationTemplate,
   ...eventBase,
-  type: "withdrawal",
   revocation: {
     service: "eas",
     chainId: 1,
@@ -489,18 +494,23 @@ const withdrawalEvent = {
     url: "https://example.com/revocation",
   },
 };
-expectValid(validateAuditEvent, withdrawalEvent, "withdrawal event");
+expectValid(validateAuditEvent, revocationEvent, "revocation event");
 
-const withdrawalWithoutRevocation = clone(withdrawalEvent);
-delete withdrawalWithoutRevocation.revocation;
-expectInvalid(validateAuditEvent, withdrawalWithoutRevocation, "withdrawal without EAS evidence");
+const revocationWithoutEvidence = clone(revocationEvent);
+delete revocationWithoutEvidence.revocation;
+expectInvalid(validateAuditEvent, revocationWithoutEvidence, "revocation without EAS evidence");
 
-const withdrawalWithReplacement = clone(withdrawalEvent);
-withdrawalWithReplacement.replacement = {
+const revocationWithReplacement = clone(revocationEvent);
+revocationWithReplacement.replacement = {
   descriptorHash: bytes32,
   dossier: `audits/example/example/${bytes32}`,
 };
-expectInvalid(validateAuditEvent, withdrawalWithReplacement, "withdrawal with replacement payload");
+expectInvalid(validateAuditEvent, revocationWithReplacement, "revocation with replacement payload");
+
+const legacyEventType = { ...revocationEvent, type: "withdrawal" };
+expectInvalid(validateAuditEvent, legacyEventType, "legacy event type");
+const revokedBaseAudit = { ...completeApproval, status: "revoked" };
+expectInvalid(validateAudit, revokedBaseAudit, "revoked is derived, not a base audit status");
 
 const supersessionEvent = {
   ...eventBase,
@@ -524,7 +534,7 @@ const correctionEvent = {
 expectValid(validateAuditEvent, correctionEvent, "correction event");
 
 const correctionWithRevocation = clone(correctionEvent);
-correctionWithRevocation.revocation = clone(withdrawalEvent.revocation);
+correctionWithRevocation.revocation = clone(revocationEvent.revocation);
 expectInvalid(validateAuditEvent, correctionWithRevocation, "correction with revocation payload");
 
 const rawTx = Transaction.from({ type: 2, chainId: 1, to: address }).unsignedSerialized;
