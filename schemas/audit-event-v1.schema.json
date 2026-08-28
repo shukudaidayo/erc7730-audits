@@ -1,0 +1,147 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/shukudaidayo/erc7730-audits/main/schemas/audit-event-v1.schema.json",
+  "title": "ERC-7730 audit lifecycle event",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "formatVersion",
+    "type",
+    "descriptorHash",
+    "auditor",
+    "recordedAt",
+    "reason"
+  ],
+  "properties": {
+    "$schema": { "type": "string" },
+    "formatVersion": { "const": "1.0.0" },
+    "type": { "enum": ["withdrawal", "supersession", "correction"] },
+    "descriptorHash": { "$ref": "#/$defs/bytes32" },
+    "auditor": { "$ref": "#/$defs/caip10" },
+    "recordedAt": { "type": "string", "format": "date-time" },
+    "reason": { "type": "string", "minLength": 1 },
+    "affectedFormats": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 },
+      "uniqueItems": true
+    },
+    "affectedDeployments": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/caip10" },
+      "uniqueItems": true
+    },
+    "references": {
+      "type": "array",
+      "items": { "type": "string", "format": "uri" },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "revocation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "service",
+        "chainId",
+        "contract",
+        "attestationUID",
+        "transactionHash",
+        "revokedAt"
+      ],
+      "properties": {
+        "service": { "const": "eas" },
+        "chainId": { "type": "integer", "minimum": 1 },
+        "contract": { "$ref": "#/$defs/address" },
+        "attestationUID": { "$ref": "#/$defs/bytes32" },
+        "transactionHash": { "$ref": "#/$defs/bytes32" },
+        "revokedAt": { "type": "string", "format": "date-time" },
+        "url": { "type": "string", "format": "uri" }
+      }
+    },
+    "replacement": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["descriptorHash", "dossier"],
+      "properties": {
+        "descriptorHash": { "$ref": "#/$defs/bytes32" },
+        "dossier": { "$ref": "#/$defs/repositoryRelativePath" },
+        "attestationUID": { "$ref": "#/$defs/bytes32" }
+      }
+    },
+    "correction": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["summary", "affectedFiles"],
+      "properties": {
+        "summary": { "type": "string", "minLength": 1 },
+        "affectedFiles": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/repositoryRelativePath" },
+          "minItems": 1,
+          "uniqueItems": true
+        }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": { "type": { "const": "withdrawal" } },
+        "required": ["type"]
+      },
+      "then": {
+        "properties": {
+          "revocation": {},
+          "replacement": false,
+          "correction": false
+        },
+        "required": ["revocation"]
+      }
+    },
+    {
+      "if": {
+        "properties": { "type": { "const": "supersession" } },
+        "required": ["type"]
+      },
+      "then": {
+        "properties": {
+          "replacement": {},
+          "revocation": false,
+          "correction": false
+        },
+        "required": ["replacement"]
+      }
+    },
+    {
+      "if": {
+        "properties": { "type": { "const": "correction" } },
+        "required": ["type"]
+      },
+      "then": {
+        "properties": {
+          "correction": {},
+          "revocation": false,
+          "replacement": false
+        },
+        "required": ["correction"]
+      }
+    }
+  ],
+  "$defs": {
+    "bytes32": {
+      "type": "string",
+      "pattern": "^0x[0-9a-fA-F]{64}$"
+    },
+    "address": {
+      "type": "string",
+      "pattern": "^0x[0-9a-fA-F]{40}$"
+    },
+    "caip10": {
+      "type": "string",
+      "pattern": "^eip155:[0-9]+:0x[0-9a-fA-F]{40}$"
+    },
+    "repositoryRelativePath": {
+      "type": "string",
+      "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.(?:/|$)).+$"
+    }
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "name": "erc7730-audits",
+  "version": "0.1.0",
+  "private": true,
+  "license": "CC0-1.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/shukudaidayo/erc7730-audits.git"
+  },
+  "type": "module",
+  "scripts": {
+    "test": "node scripts/test-schemas.mjs && node scripts/test-audit-events.mjs && node scripts/test-attestations.mjs && node scripts/verify-audits.mjs",
+    "new-audit": "node scripts/new-audit.mjs",
+    "audit-tests": "node scripts/run-audit-tests.mjs",
+    "verify": "node scripts/verify-audits.mjs",
+    "generate-indexes": "node scripts/generate-indexes.mjs",
+    "check-indexes": "node scripts/generate-indexes.mjs --check"
+  },
+  "devDependencies": {
+    "ajv": "^8.17.1",
+    "ajv-formats": "^3.0.1",
+    "ethers": "^6.15.0"
+  }
+}

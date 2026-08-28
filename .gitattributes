@@ -1,0 +1,2 @@
+# Preserve the exact bytes of immutable audit evidence.
+audits/** -text

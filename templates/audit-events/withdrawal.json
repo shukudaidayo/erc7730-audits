@@ -1,0 +1,18 @@
+{
+  "$schema": "../../../../../schemas/audit-event-v1.schema.json",
+  "formatVersion": "1.0.0",
+  "type": "withdrawal",
+  "descriptorHash": "0xREPLACE_DESCRIPTOR_HASH",
+  "auditor": "eip155:1:0xREPLACE_AUDITOR_ADDRESS",
+  "recordedAt": "REPLACE_RECORDED_AT",
+  "reason": "REPLACE_WITHDRAWAL_REASON",
+  "revocation": {
+    "service": "eas",
+    "chainId": 1,
+    "contract": "0xREPLACE_EAS_CONTRACT",
+    "attestationUID": "0xREPLACE_ATTESTATION_UID",
+    "transactionHash": "0xREPLACE_REVOCATION_TRANSACTION_HASH",
+    "revokedAt": "REPLACE_REVOKED_AT",
+    "url": "https://REPLACE_EAS_REVOCATION_URL"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "$schema": "../../../../../schemas/audit-event-v1.schema.json",
+  "formatVersion": "1.0.0",
+  "type": "correction",
+  "descriptorHash": "0xREPLACE_DESCRIPTOR_HASH",
+  "auditor": "eip155:1:0xREPLACE_AUDITOR_ADDRESS",
+  "recordedAt": "REPLACE_RECORDED_AT",
+  "reason": "REPLACE_CORRECTION_REASON",
+  "correction": {
+    "summary": "REPLACE_CORRECTED_INFORMATION",
+    "affectedFiles": [
+      "audits/REPLACE_PROJECT/REPLACE_DESCRIPTOR/0xREPLACE_DESCRIPTOR_HASH/REPORT.md"
+    ]
+  }
+}

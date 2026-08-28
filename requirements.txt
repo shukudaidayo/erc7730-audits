@@ -1,0 +1,2 @@
+# Python audit tooling only. The Sourcify runner is pinned in audit-tools.json.
+clearsig==0.3.1

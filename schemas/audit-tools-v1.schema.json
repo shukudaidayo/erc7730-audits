@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/shukudaidayo/erc7730-audits/main/schemas/audit-tools-v1.schema.json",
+  "title": "ERC-7730 audit repository tool pins",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["formatVersion", "sourcifyRunner"],
+  "properties": {
+    "$schema": { "type": "string" },
+    "formatVersion": { "const": "1.0.0" },
+    "sourcifyRunner": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["repository", "commit", "package", "version"],
+      "properties": {
+        "repository": { "type": "string", "format": "uri", "pattern": "^https://[^/]+" },
+        "commit": { "type": "string", "pattern": "^[0-9a-fA-F]{40}$" },
+        "package": { "const": "@ethereum-sourcify/clear-signing-test-runner" },
+        "version": {
+          "type": "string",
+          "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+(?:[-+][0-9A-Za-z.-]+)?$"
+        }
+      }
+    }
+  }
+}

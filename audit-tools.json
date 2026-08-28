@@ -1,0 +1,10 @@
+{
+  "$schema": "./schemas/audit-tools-v1.schema.json",
+  "formatVersion": "1.0.0",
+  "sourcifyRunner": {
+    "repository": "https://github.com/sourcifyeth/clear-signing-test-runner",
+    "commit": "dae3cdabd0eab26173d7f7a31a2ca7e75bf07daf",
+    "package": "@ethereum-sourcify/clear-signing-test-runner",
+    "version": "0.1.0"
+  }
+}

@@ -1,0 +1,64 @@
+{
+  "$schema": "../../../../schemas/deployments-v1.schema.json",
+  "formatVersion": "1.0.0",
+  "descriptorHash": "0x20de898a28022b1678a43f6c2ee75d3dd700ddfbd48f7770897c05472871dae7",
+  "capturedAt": "2026-08-28T02:21:48Z",
+  "deployments": [
+    {
+      "id": "eip155:1:0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+      "preFilter": "pass-direct",
+      "observedAtBlock": 25850638,
+      "observedAtBlockHash": "0x96a576624e445bc18909f978b6923bbad3ac143b4b83677a3ff22e8f5c74cbc1",
+      "runtimeCodeHash": "0xd0a06b12ac47863b5c7be4185c2deaad1c61557033f56c7d4ea74429cbb25e23",
+      "sourceVerification": {
+        "sourcify": {
+          "status": "verified",
+          "url": "https://repo.sourcify.dev/1/0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+          "evidence": "Sourcify match 1605500 identifies WETH9 compiled with Solidity 0.4.19. Its creation and runtime bytecode are verified matches. The runtime bytecode returned by Sourcify hashes to the same value as eth_getCode at block 25850638."
+        }
+      },
+      "proxy": {
+        "type": "none",
+        "upgradeability": "not-proxy",
+        "evidence": "Sourcify reports isProxy=false. The verified WETH9 runtime implements deposit() directly and contains no delegatecall-based dispatch path."
+      },
+      "stateRefs": [],
+      "displayBindings": [
+        {
+          "formats": ["deposit()"],
+          "result": "not-required",
+          "rationale": "The immutable, non-proxy deposit() implementation credits msg.value directly to balanceOf[msg.sender]. It reads no administrator-controlled configuration that can change the Wrap intent or the displayed native-currency amount."
+        }
+      ],
+      "notes": "Observation block timestamp: 2026-08-28T02:05:59Z."
+    },
+    {
+      "id": "eip155:11155111:0xfFf9976782d46CC05630D1f6eBAb18b2324d6B14",
+      "preFilter": "pass-direct",
+      "observedAtBlock": 11581802,
+      "observedAtBlockHash": "0xd021d9638b1c8294e4bd49e4ff8dc3f6f6d133633cee83b2bfc07b8642b05576",
+      "runtimeCodeHash": "0xc864e10689f2da18833652a3b075d43106e87f0f90d95ee64f6f0b33bc026083",
+      "sourceVerification": {
+        "sourcify": {
+          "status": "verified",
+          "url": "https://repo.sourcify.dev/11155111/0xfFf9976782d46CC05630D1f6eBAb18b2324d6B14",
+          "evidence": "Sourcify match 1079487 identifies WETH9 compiled with Solidity 0.4.19. Its creation and runtime bytecode are exact matches. The runtime bytecode returned by Sourcify hashes to the same value as eth_getCode at block 11581802."
+        }
+      },
+      "proxy": {
+        "type": "none",
+        "upgradeability": "not-proxy",
+        "evidence": "Sourcify reports isProxy=false. The verified WETH9 runtime implements deposit() directly and contains no delegatecall-based dispatch path."
+      },
+      "stateRefs": [],
+      "displayBindings": [
+        {
+          "formats": ["deposit()"],
+          "result": "not-required",
+          "rationale": "The immutable, non-proxy deposit() implementation credits msg.value directly to balanceOf[msg.sender]. It reads no administrator-controlled configuration that can change the Wrap intent or the displayed native-currency amount."
+        }
+      ],
+      "notes": "Observation block timestamp: 2026-08-28T02:06:00Z."
+    }
+  ]
+}

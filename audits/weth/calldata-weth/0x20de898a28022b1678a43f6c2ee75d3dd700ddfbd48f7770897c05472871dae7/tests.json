@@ -1,0 +1,58 @@
+{
+  "$schema": "../../../../schemas/tests-v1.schema.json",
+  "descriptor": "./descriptor.json",
+  "dataProvider": {
+    "tokens": {},
+    "addressNames": {},
+    "ensNames": {}
+  },
+  "tests": [
+    {
+      "description": "Wrap 0.00187 ETH on Ethereum mainnet (real transaction)",
+      "caseType": "typical",
+      "rawTx": "0x02f5018202098477359400848c45e4d782798994c02aaa39b223fe8d0a0e5c4f27ead9083c756cc28706a4c14dbae00085d0e30db076c0",
+      "from": "0xDdFC7B22BA7150d4A952a9b72656b2A936E851c8",
+      "txHash": "0xc9d812ab4580595365ad3f90f34ed16973472458b0aeb7be3d318523e8083042",
+      "expected": {
+        "intent": "Wrap",
+        "owner": "WETH",
+        "fields": [
+          {
+            "label": "Amount",
+            "value": "0.00187 ETH"
+          }
+        ]
+      }
+    },
+    {
+      "description": "Wrap zero ETH on Ethereum mainnet",
+      "caseType": "boundary",
+      "rawTx": "0x02ec0180843b9aca008477359400830186a094c02aaa39b223fe8d0a0e5c4f27ead9083c756cc28084d0e30db0c0",
+      "expected": {
+        "intent": "Wrap",
+        "owner": "WETH",
+        "fields": [
+          {
+            "label": "Amount",
+            "value": "0 ETH"
+          }
+        ]
+      }
+    },
+    {
+      "description": "Wrap 1 ETH on Sepolia",
+      "caseType": "typical",
+      "rawTx": "0x02f783aa36a780843b9aca008477359400830186a094fff9976782d46cc05630d1f6ebab18b2324d6b14880de0b6b3a764000084d0e30db0c0",
+      "expected": {
+        "intent": "Wrap",
+        "owner": "WETH",
+        "fields": [
+          {
+            "label": "Amount",
+            "value": "1 ETH"
+          }
+        ]
+      }
+    }
+  ]
+}

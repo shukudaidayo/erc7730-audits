@@ -1,0 +1,22 @@
+{
+  "formatVersion": "1.0.0",
+  "latestRecordAt": "2026-08-28T08:19:30Z",
+  "entries": {
+    "eip155:1:0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2": [
+      {
+        "descriptorHash": "0x20de898a28022b1678a43f6c2ee75d3dd700ddfbd48f7770897c05472871dae7",
+        "status": "approved",
+        "auditor": "eip155:1:0x9a659894e5D115846767dB0e1685744c452E7a6e",
+        "dossier": "audits/weth/calldata-weth/0x20de898a28022b1678a43f6c2ee75d3dd700ddfbd48f7770897c05472871dae7"
+      }
+    ],
+    "eip155:11155111:0xfff9976782d46cc05630d1f6ebab18b2324d6b14": [
+      {
+        "descriptorHash": "0x20de898a28022b1678a43f6c2ee75d3dd700ddfbd48f7770897c05472871dae7",
+        "status": "approved",
+        "auditor": "eip155:1:0x9a659894e5D115846767dB0e1685744c452E7a6e",
+        "dossier": "audits/weth/calldata-weth/0x20de898a28022b1678a43f6c2ee75d3dd700ddfbd48f7770897c05472871dae7"
+      }
+    ]
+  }
+}

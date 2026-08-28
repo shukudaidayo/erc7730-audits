@@ -1,0 +1,25 @@
+{
+  "formatVersion": "1.0.0",
+  "latestRecordAt": "2026-08-28T08:19:30Z",
+  "entries": {
+    "0x20de898a28022b1678a43f6c2ee75d3dd700ddfbd48f7770897c05472871dae7": [
+      {
+        "status": "approved",
+        "auditor": "eip155:1:0x9a659894e5D115846767dB0e1685744c452E7a6e",
+        "project": "weth",
+        "descriptor": "calldata-weth",
+        "dossier": "audits/weth/calldata-weth/0x20de898a28022b1678a43f6c2ee75d3dd700ddfbd48f7770897c05472871dae7",
+        "reviewedAt": "2026-08-28T07:46:07Z",
+        "deployments": [
+          "eip155:11155111:0xfFf9976782d46CC05630D1f6eBAb18b2324d6B14",
+          "eip155:1:0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2"
+        ],
+        "attestation": {
+          "file": "audits/weth/calldata-weth/0x20de898a28022b1678a43f6c2ee75d3dd700ddfbd48f7770897c05472871dae7/calldata-weth.eip155-1-0x9a659894e5D115846767dB0e1685744c452E7a6e.json",
+          "uid": "0x0e2e90b75f70e262992a3f3723b3030cbc68c8b0c8350d8e71ad2694e387f226",
+          "attestedAt": "2026-08-28T08:19:30Z"
+        }
+      }
+    ]
+  }
+}

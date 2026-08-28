@@ -1,0 +1,79 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/shukudaidayo/erc7730-audits/main/schemas/test-results-v1.schema.json",
+  "title": "ERC-7730 audit rendering results",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["runner", "implementation", "cases"],
+  "properties": {
+    "runner": { "type": "string", "minLength": 1 },
+    "implementation": { "type": "string", "minLength": 1 },
+    "cases": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/case" }
+    }
+  },
+  "$defs": {
+    "case": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["description", "status"],
+      "properties": {
+        "description": { "type": "string", "minLength": 1 },
+        "status": { "enum": ["pass", "fail", "error", "skipped"] },
+        "rendered": { "$ref": "#/$defs/renderedOutput" },
+        "message": { "type": "string", "minLength": 1 }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": { "status": { "enum": ["pass", "fail"] } },
+            "required": ["status"]
+          },
+          "then": {
+            "properties": { "rendered": { "$ref": "#/$defs/renderedOutput" } },
+            "required": ["rendered"]
+          }
+        },
+        {
+          "if": {
+            "properties": { "status": { "enum": ["error", "skipped"] } },
+            "required": ["status"]
+          },
+          "then": {
+            "properties": { "message": { "type": "string", "minLength": 1 } },
+            "required": ["message"]
+          }
+        }
+      ]
+    },
+    "renderedOutput": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["intent", "fields"],
+      "properties": {
+        "intent": { "type": "string" },
+        "interpolatedIntent": { "type": "string" },
+        "owner": { "type": "string" },
+        "fields": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/renderedField" }
+        }
+      }
+    },
+    "renderedField": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["label", "value"],
+      "properties": {
+        "label": { "type": "string" },
+        "value": {
+          "oneOf": [
+            { "type": "string" },
+            { "$ref": "#/$defs/renderedOutput" }
+          ]
+        }
+      }
+    }
+  }
+}

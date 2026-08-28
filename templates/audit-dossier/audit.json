@@ -1,0 +1,54 @@
+{
+  "$schema": "../../../../schemas/audit-result-v1.schema.json",
+  "formatVersion": "1.0.0",
+  "policyVersion": "REPLACE_POLICY_VERSION",
+  "status": "draft",
+  "auditor": {
+    "id": "eip155:1:0xREPLACE_AUDITOR_ADDRESS",
+    "profile": "../../../../auditor/profile.json"
+  },
+  "descriptor": {
+    "source": {
+      "repository": "https://github.com/ethereum/clear-signing-erc7730-registry",
+      "commit": "REPLACE_COMMIT_SHA",
+      "path": "registry/REPLACE_PROJECT/REPLACE_DESCRIPTOR.json"
+    },
+    "erc7730Version": "REPLACE_VERSION",
+    "schema": {
+      "declaredReference": "REPLACE_SCHEMA_REFERENCE",
+      "snapshot": "erc7730-schema.json",
+      "hash": {
+        "standard": "ERC-8176",
+        "algorithm": "keccak256-rfc8785-jcs",
+        "value": "0xREPLACE_SCHEMA_HASH"
+      }
+    },
+    "hash": {
+      "standard": "ERC-8176",
+      "algorithm": "keccak256-rfc8785-jcs",
+      "value": "0xREPLACE_DESCRIPTOR_HASH"
+    },
+    "snapshot": "descriptor.json"
+  },
+  "scope": {
+    "deployments": [],
+    "formatsReviewed": []
+  },
+  "findings": [],
+  "limitations": [],
+  "testing": {
+    "fixture": "tests.json",
+    "result": "not-run",
+    "tool": "REPLACE_RUNNER_PACKAGE",
+    "toolVersion": "REPLACE_RUNNER_PACKAGE@REPLACE_RUNNER_VERSION",
+    "toolCommit": "REPLACE_RUNNER_COMMIT",
+    "command": "node scripts/run-audit-tests.mjs audits/REPLACE_PROJECT/REPLACE_DESCRIPTOR/0xREPLACE_DESCRIPTOR_HASH"
+  },
+  "evidence": {
+    "deployments": "deployments.json",
+    "dependencies": "dependencies.json",
+    "report": "REPORT.md"
+  },
+  "createdAt": "REPLACE_CREATED_AT",
+  "notes": "DRAFT: complete the review before recording a final status."
+}

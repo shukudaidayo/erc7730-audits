@@ -1,0 +1,14 @@
+{
+  "$schema": "../../../../../schemas/audit-event-v1.schema.json",
+  "formatVersion": "1.0.0",
+  "type": "supersession",
+  "descriptorHash": "0xREPLACE_DESCRIPTOR_HASH",
+  "auditor": "eip155:1:0xREPLACE_AUDITOR_ADDRESS",
+  "recordedAt": "REPLACE_RECORDED_AT",
+  "reason": "REPLACE_SUPERSESSION_REASON",
+  "replacement": {
+    "descriptorHash": "0xREPLACE_REPLACEMENT_DESCRIPTOR_HASH",
+    "dossier": "audits/REPLACE_PROJECT/REPLACE_DESCRIPTOR/0xREPLACE_REPLACEMENT_DESCRIPTOR_HASH",
+    "attestationUID": "0xREPLACE_REPLACEMENT_ATTESTATION_UID"
+  }
+}

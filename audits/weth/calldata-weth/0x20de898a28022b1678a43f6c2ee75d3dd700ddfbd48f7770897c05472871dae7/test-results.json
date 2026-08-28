@@ -1,0 +1,48 @@
+{
+  "runner": "@ethereum-sourcify/clear-signing-test-runner",
+  "implementation": "@ethereum-sourcify/clear-signing@0.2.2",
+  "cases": [
+    {
+      "description": "Wrap 0.00187 ETH on Ethereum mainnet (real transaction)",
+      "status": "pass",
+      "rendered": {
+        "intent": "Wrap",
+        "fields": [
+          {
+            "label": "Amount",
+            "value": "0.00187 ETH"
+          }
+        ],
+        "owner": "WETH"
+      }
+    },
+    {
+      "description": "Wrap zero ETH on Ethereum mainnet",
+      "status": "pass",
+      "rendered": {
+        "intent": "Wrap",
+        "fields": [
+          {
+            "label": "Amount",
+            "value": "0 ETH"
+          }
+        ],
+        "owner": "WETH"
+      }
+    },
+    {
+      "description": "Wrap 1 ETH on Sepolia",
+      "status": "pass",
+      "rendered": {
+        "intent": "Wrap",
+        "fields": [
+          {
+            "label": "Amount",
+            "value": "1 ETH"
+          }
+        ],
+        "owner": "WETH"
+      }
+    }
+  ]
+}

@@ -1,0 +1,173 @@
+{
+  "$schema": "../../../../schemas/audit-result-v1.schema.json",
+  "formatVersion": "1.0.0",
+  "policyVersion": "1.0.0",
+  "status": "approved",
+  "auditor": {
+    "id": "eip155:1:0x9a659894e5D115846767dB0e1685744c452E7a6e",
+    "profile": "../../../../auditor/profile.json"
+  },
+  "descriptor": {
+    "source": {
+      "repository": "https://github.com/ethereum/clear-signing-erc7730-registry",
+      "commit": "8936407e503b319882d3c811c26c8648a8e449ca",
+      "path": "registry/weth/calldata-weth.json"
+    },
+    "erc7730Version": "2.0.0",
+    "schema": {
+      "declaredReference": "../../specs/erc7730-v2.schema.json",
+      "snapshot": "erc7730-schema.json",
+      "hash": {
+        "standard": "ERC-8176",
+        "algorithm": "keccak256-rfc8785-jcs",
+        "value": "0x690cb47b8d4b847dbc9a9e29da75cb05d436b132900d57508ca12173f1f800b3"
+      }
+    },
+    "hash": {
+      "standard": "ERC-8176",
+      "algorithm": "keccak256-rfc8785-jcs",
+      "value": "0x20de898a28022b1678a43f6c2ee75d3dd700ddfbd48f7770897c05472871dae7"
+    },
+    "snapshot": "descriptor.json"
+  },
+  "scope": {
+    "deployments": [
+      "eip155:1:0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+      "eip155:11155111:0xfFf9976782d46CC05630D1f6eBAb18b2324d6B14"
+    ],
+    "formatsReviewed": [
+      {
+        "signature": "deposit()",
+        "selector": "0xd0e30db0",
+        "result": "pass",
+        "boundaryRationale": "The fixtures cover the zero-value minimum, representative nonzero values, and both declared deployments. No fixed maximum-value case applies because deposit() has no contract-defined cap; its executable upper bound is the sender's balance, and amount rendering is branchless across nonzero values.",
+        "notes": "The verified ABI and implementation have no parameters. The payable function mints WETH to msg.sender in an amount exactly equal to msg.value."
+      }
+    ]
+  },
+  "findings": [],
+  "limitations": [
+    {
+      "id": "L-001",
+      "type": "omitted-function",
+      "signature": "withdraw(uint256)",
+      "selector": "0x2e1a7d4d",
+      "impact": "Unwrapping WETH is not covered. A wallet must not apply this descriptor to withdraw(uint256) and should use another verified description or show the transaction without ERC-7730 clear signing."
+    },
+    {
+      "id": "L-002",
+      "type": "omitted-payable-fallback",
+      "signature": "payable fallback",
+      "impact": "Sending ETH to either reviewed deployment with empty calldata also wraps ETH, but this descriptor has no format for that path. A wallet must not infer deposit() coverage for an empty-calldata transaction."
+    },
+    {
+      "id": "L-003",
+      "type": "omitted-function",
+      "signature": "approve(address,uint256)",
+      "selector": "0x095ea7b3",
+      "impact": "WETH allowance approvals are outside this descriptor. A wallet may use a separately verified generic ERC-20 description, but must not present this descriptor's Wrap intent."
+    },
+    {
+      "id": "L-004",
+      "type": "omitted-function",
+      "signature": "transfer(address,uint256)",
+      "selector": "0xa9059cbb",
+      "impact": "WETH transfers are outside this descriptor. A wallet may use a separately verified generic ERC-20 description, but must not present this descriptor's Wrap intent."
+    },
+    {
+      "id": "L-005",
+      "type": "omitted-function",
+      "signature": "transferFrom(address,address,uint256)",
+      "selector": "0x23b872dd",
+      "impact": "Delegated WETH transfers are outside this descriptor. A wallet may use a separately verified generic ERC-20 description, but must not present this descriptor's Wrap intent."
+    },
+    {
+      "id": "L-006",
+      "type": "omitted-deployment",
+      "reason": "compatible-not-included",
+      "deployments": [
+        "eip155:10:0x4200000000000000000000000000000000000006",
+        "eip155:11155420:0x4200000000000000000000000000000000000006",
+        "eip155:8453:0x4200000000000000000000000000000000000006",
+        "eip155:84532:0x4200000000000000000000000000000000000006",
+        "eip155:7777777:0x4200000000000000000000000000000000000006",
+        "eip155:480:0x4200000000000000000000000000000000000006",
+        "eip155:130:0x4200000000000000000000000000000000000006",
+        "eip155:59144:0xe5D7C2a44FfDDf6b295A15c148167daaAf5Cf34f"
+      ],
+      "sources": [
+        "https://github.com/Uniswap/sdks/blob/b1b62ce65e7cb40101d180ac70bc0aad6e8b0f01/sdks/sdk-core/src/entities/weth9.ts"
+      ],
+      "impact": "These direct, Sourcify-verified deployments expose the same payable, no-argument, one-to-one deposit behavior, but this descriptor does not declare them. They receive no clear-signing coverage from this descriptor even though they appear compatible with its deposit() format."
+    },
+    {
+      "id": "L-007",
+      "type": "omitted-deployment",
+      "reason": "proxy-not-bindable",
+      "deployments": [
+        "eip155:42161:0x82aF49447D8a07e3bd95BD0d56f35241523fBab1",
+        "eip155:81457:0x4300000000000000000000000000000000000004"
+      ],
+      "sources": [
+        "https://github.com/Uniswap/sdks/blob/b1b62ce65e7cb40101d180ac70bc0aad6e8b0f01/sdks/sdk-core/src/entities/weth9.ts",
+        "https://repo.sourcify.dev/42161/0x82aF49447D8a07e3bd95BD0d56f35241523fBab1",
+        "https://repo.sourcify.dev/81457/0x4300000000000000000000000000000000000004"
+      ],
+      "impact": "These deployments are upgradeable proxies. ERC-7730 v2 can bind the chain and proxy address but cannot bind the implementation, so this audit policy does not permit adding them to the descriptor while an upgrade can change the displayed meaning."
+    },
+    {
+      "id": "L-008",
+      "type": "omitted-deployment",
+      "reason": "source-not-verified",
+      "deployments": [
+        "eip155:421614:0x980B62Da83eFf3D4576C647993b0c1D7faf17c73",
+        "eip155:324:0x5AEa5775959fBC2557Cc8789bC1bf90A239D9a91",
+        "eip155:1301:0x4200000000000000000000000000000000000006",
+        "eip155:1868:0x4200000000000000000000000000000000000006",
+        "eip155:4326:0x4200000000000000000000000000000000000006",
+        "eip155:4663:0x0Bd7D308f8E1639FAb988df18A8011f41EAcAD73",
+        "eip155:57073:0x4200000000000000000000000000000000000006"
+      ],
+      "sources": [
+        "https://github.com/Uniswap/sdks/blob/b1b62ce65e7cb40101d180ac70bc0aad6e8b0f01/sdks/sdk-core/src/entities/weth9.ts",
+        "https://sourcify.dev/server/chains"
+      ],
+      "impact": "Sourcify supports all seven chains but had no verification record for these addresses during this review. The audit policy therefore does not permit adding them until the required source verification is available."
+    }
+  ],
+  "testing": {
+    "fixture": "tests.json",
+    "result": "pass",
+    "results": "test-results.json",
+    "tool": "@ethereum-sourcify/clear-signing-test-runner",
+    "toolVersion": "@ethereum-sourcify/clear-signing-test-runner@0.1.0 / @ethereum-sourcify/clear-signing@0.2.2",
+    "toolCommit": "dae3cdabd0eab26173d7f7a31a2ca7e75bf07daf",
+    "command": "node scripts/run-audit-tests.mjs audits/weth/calldata-weth/0x20de898a28022b1678a43f6c2ee75d3dd700ddfbd48f7770897c05472871dae7",
+    "externalData": [
+      {
+        "name": "Resolved chain information used by rendering tests",
+        "format": "chain-info-v1",
+        "source": "https://chainid.network/chains_mini.json",
+        "snapshot": "test-chain-info.json",
+        "capturedAt": "2026-08-28T07:44:52Z",
+        "hash": {
+          "algorithm": "sha256",
+          "value": "0x1b25715510ae6679c9aaa1a49748d9c7620453a58053d2955ae4dfbaf74d9875"
+        }
+      }
+    ]
+  },
+  "evidence": {
+    "deployments": "deployments.json",
+    "dependencies": "dependencies.json",
+    "report": "REPORT.md"
+  },
+  "attestation": {
+    "type": "eas-offchain",
+    "schemaUID": "0xe023eef113c1670774801c34b377fdf612dd8a4d2fa92fe382e15bd91fafb5c2",
+    "uid": "0x0e2e90b75f70e262992a3f3723b3030cbc68c8b0c8350d8e71ad2694e387f226",
+    "file": "calldata-weth.eip155-1-0x9a659894e5D115846767dB0e1685744c452E7a6e.json"
+  },
+  "createdAt": "2026-08-28T02:00:22Z",
+  "reviewedAt": "2026-08-28T07:46:07Z"
+}
