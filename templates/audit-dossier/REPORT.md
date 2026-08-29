@@ -11,9 +11,9 @@ call out any important coverage limitation.
 
 | Field | Value |
 | --- | --- |
-| Project | `REPLACE_PROJECT` |
+| Project | REPLACE_PROJECT |
 | Registry commit | `REPLACE_FULL_COMMIT` |
-| Registry path | `REPLACE_SOURCE_PATH` |
+| Registry path | REPLACE_SOURCE_PATH |
 | ERC-7730 version | `REPLACE_VERSION` |
 | ERC-7730 schema hash | `0xREPLACE_SCHEMA_HASH` |
 | Audit policy version | `REPLACE_POLICY_VERSION` |

@@ -35,7 +35,6 @@ function findAuditFiles(directory) {
   if (!existsSync(directory)) return [];
   const files = [];
   for (const entry of readdirSync(directory, { withFileTypes: true })) {
-    if (entry.name.startsWith(".")) continue;
     const path = join(directory, entry.name);
     if (entry.isDirectory()) files.push(...findAuditFiles(path));
     else if (entry.name === "audit.json") files.push(path);

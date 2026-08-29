@@ -52,10 +52,29 @@ function parseArgs(argv) {
   return { project: argv[0], slug: argv[1] };
 }
 
-function validateSlug(value, label) {
-  if (!/^[a-z0-9][a-z0-9._-]*$/.test(value)) {
-    usage(`${label} must contain lowercase letters, numbers, dots, underscores, or hyphens.`);
+export function isSafePathComponent(value) {
+  return typeof value === "string"
+    && value.length > 0
+    && value !== "."
+    && value !== ".."
+    && !value.includes("/")
+    && !value.includes("\\")
+    && !/\p{Cc}/u.test(value);
+}
+
+function validatePathComponent(value, label) {
+  if (!isSafePathComponent(value)) {
+    usage(`${label} must be one printable path component without slashes or backslashes, and cannot be a single or double dot.`);
   }
+}
+
+export function shellQuote(value) {
+  return `'${value.replaceAll("'", "'\\''")}'`;
+}
+
+function markdownCode(value) {
+  const escaped = value.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;");
+  return `<code>${escaped}</code>`;
 }
 
 function descriptorHash(path) {
@@ -189,7 +208,8 @@ export function createDossier(destination, {
   audit.testing.tool = runnerPin.package;
   audit.testing.toolVersion = `${runnerPin.package}@${runnerPin.version}`;
   audit.testing.toolCommit = runnerPin.commit;
-  audit.testing.command = `node scripts/run-audit-tests.mjs audits/${project}/${slug}/${hash}`;
+  const dossierPath = `audits/${project}/${slug}/${hash}`;
+  audit.testing.command = `node scripts/run-audit-tests.mjs ${shellQuote(dossierPath)}`;
 
   mkdirSync(destination, { recursive: true });
   try {
@@ -202,10 +222,10 @@ export function createDossier(destination, {
 
     // Substitute only report identity fields, never JSON or copied evidence.
     const replacements = {
-      REPLACE_PROJECT: project,
-      REPLACE_DESCRIPTOR: slug,
+      REPLACE_PROJECT: markdownCode(project),
+      REPLACE_DESCRIPTOR: markdownCode(slug),
       REPLACE_FULL_COMMIT: commit,
-      REPLACE_SOURCE_PATH: sourcePath,
+      REPLACE_SOURCE_PATH: markdownCode(sourcePath),
       REPLACE_VERSION: schema.version,
       "0xREPLACE_SCHEMA_HASH": schemaHash,
       REPLACE_POLICY_VERSION: policyVersion,
@@ -229,8 +249,8 @@ export function createDossier(destination, {
 
 function main() {
   const { project, slug } = parseArgs(process.argv.slice(2));
-  validateSlug(project, "project");
-  validateSlug(slug, "slug");
+  validatePathComponent(project, "project");
+  validatePathComponent(slug, "slug");
   const sourcePath = `registry/${project}/${slug}.json`;
   const inputDescriptor = join(settings.registryCheckout, ...sourcePath.split("/"));
   if (!existsSync(inputDescriptor)) usage(`Descriptor not found: ${inputDescriptor}`);

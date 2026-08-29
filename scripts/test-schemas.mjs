@@ -9,7 +9,7 @@ import Ajv2020 from "ajv/dist/2020.js";
 import addFormats from "ajv-formats";
 import { Transaction } from "ethers";
 import { fixtureChainIds, loadRunnerPin } from "./audit-inputs.mjs";
-import { createDossier } from "./new-audit.mjs";
+import { createDossier, isSafePathComponent, shellQuote } from "./new-audit.mjs";
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const bytes32 = `0x${"00".repeat(32)}`;
@@ -48,6 +48,24 @@ const validateAuditEvent = validator("audit-event-v1.schema.json");
 
 const auditTools = JSON.parse(readFileSync(join(root, "audit-tools.json"), "utf8"));
 expectValid(validateAuditTools, auditTools, "repository audit tool pins");
+
+for (const component of [
+  "calldata-weth",
+  "calldata-mev_capital-USUALUSDC+",
+  "Hyper Discipline",
+  ".hidden",
+  "日本語",
+  "calldata-O'Reilly+<V2>",
+]) {
+  assert(isSafePathComponent(component), `accept safe case-sensitive path component: ${component}`);
+}
+for (const component of [
+  "", ".", "..", "../descriptor", "project/descriptor", "project\\descriptor",
+  "line\nbreak", "nul\0byte", "control\u0085character",
+]) {
+  assert(!isSafePathComponent(component), `reject unsafe path component: ${component}`);
+}
+assert.equal(shellQuote("audits/O'Reilly/$descriptor"), "'audits/O'\\''Reilly/$descriptor'");
 
 const abbreviatedRunnerCommit = clone(auditTools);
 abbreviatedRunnerCommit.sourcifyRunner.commit = "dae3cda";
@@ -581,7 +599,7 @@ try {
   const descriptorBytes = '{\r\n  "description": "REPLACE_VERSION 0xREPLACE_DESCRIPTOR_HASH café"\r\n}\r\n';
   const schemaBytes = '{ "version": "2.0.0", "description": "REPLACE_PROJECT REPLACE_DESCRIPTOR" }\n';
   const options = {
-    project: "example", slug: "calldata-example", commit: "a".repeat(40),
+    project: "Hyper Discipline", slug: "calldata-O'Reilly+<V2>", commit: "a".repeat(40),
     inputDescriptor: join(temporary, "input-descriptor.json"),
     auditor: `eip155:1:${address}`, hash: bytes32,
     schema: {
@@ -592,7 +610,7 @@ try {
   };
   writeFileSync(options.inputDescriptor, descriptorBytes);
   writeFileSync(options.schema.path, schemaBytes);
-  const dossier = join(temporary, bytes32);
+  const dossier = join(temporary, options.project, options.slug, bytes32);
   createDossier(dossier, options);
   assert.deepEqual(readdirSync(dossier).sort(), [
     "REPORT.md", "audit.json", "dependencies.json", "deployments.json",
@@ -613,12 +631,12 @@ try {
   assert.equal(generated.descriptor.erc7730Version, options.schema.version);
   assert.deepEqual(generated.descriptor.source, {
     repository: "https://github.com/ethereum/clear-signing-erc7730-registry",
-    commit: options.commit, path: "registry/example/calldata-example.json",
+    commit: options.commit, path: "registry/Hyper Discipline/calldata-O'Reilly+<V2>.json",
   });
   assert.deepEqual(generated.testing, {
     fixture: "tests.json", result: "not-run", tool: runnerPin.package,
     toolVersion: `${runnerPin.package}@${runnerPin.version}`, toolCommit: runnerPin.commit,
-    command: `node scripts/run-audit-tests.mjs audits/example/calldata-example/${bytes32}`,
+    command: `node scripts/run-audit-tests.mjs 'audits/Hyper Discipline/calldata-O'\\''Reilly+<V2>/${bytes32}'`,
   });
   for (const [filename, validate] of [
     ["dependencies.json", validateDependencies], ["deployments.json", validateDeployments],
@@ -628,7 +646,9 @@ try {
     assert.equal(record.descriptorHash, bytes32);
   }
   const report = readFileSync(join(dossier, "REPORT.md"), "utf8");
-  assert.match(report, /^# ERC-7730 Descriptor Audit: calldata-example\n/);
+  assert.match(report, /^# ERC-7730 Descriptor Audit: <code>calldata-O'Reilly\+&lt;V2&gt;<\/code>\n/);
+  assert(report.includes("| Project | <code>Hyper Discipline</code> |"));
+  assert(report.includes("<code>registry/Hyper Discipline/calldata-O'Reilly+&lt;V2&gt;.json</code>"));
   assert.deepEqual([...new Set(report.match(/REPLACE_[A-Z_]+/g))].sort(),
     ["REPLACE_FUNCTION_SIGNATURE", "REPLACE_REVIEWED_AT"]);
   assert(report.includes(bytes32) && report.includes(options.schemaHash));
