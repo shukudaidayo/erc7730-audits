@@ -112,6 +112,11 @@ npm ci
 node scripts/new-audit.mjs weth calldata-weth
 ```
 
+Project and descriptor arguments must exactly match the registry's
+case-sensitive names. Quote an argument when it contains spaces or shell
+punctuation. The generator accepts any printable name that is one path
+component; it rejects path separators, control characters, `.` and `..`.
+
 The local registry checkout and canonical repository URL are repository-wide
 defaults near the top of `scripts/new-audit.mjs`. The generator refuses to use
 a descriptor with uncommitted changes because the recorded commit would not
@@ -131,7 +136,7 @@ step: the verifier recomputes the hashes when you validate the dossier.
 5. Run the fixture with the repository's pinned Sourcify test runner:
 
 ```bash
-node scripts/run-audit-tests.mjs audits/<project>/<descriptor>/<descriptor-hash>
+node scripts/run-audit-tests.mjs 'audits/<project>/<descriptor>/<descriptor-hash>'
 ```
 
    The wrapper checks out the recorded runner commit below `.cache/`, installs
