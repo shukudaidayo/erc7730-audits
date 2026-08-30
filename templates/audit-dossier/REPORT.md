@@ -33,6 +33,20 @@ descriptor does not include.
 
 Record the project URL and purpose. Identify the descriptor submitter's
 connection to the project, or state that the descriptor is community supplied.
+List every user-visible identity value in `metadata`, including `owner`,
+`contractName`, and `info`, and cite authoritative support for each value. Keep
+the descriptor submitter, contract deployer or administrator, and displayed
+owner or target distinct. If `owner` names a person or organization, explain
+whether that entity created, maintains, governs, or officially operates the
+target, or is its intended counterparty or beneficiary. If it instead names a
+protocol or project, explain why that is the established identity. A URL
+declared by the descriptor is a claim to verify, not evidence by itself.
+
+Record authoritative support for every other metadata value that affects a
+display or binding condition, including deployment date, token metadata,
+constants, enums, and maps. For every used map, document its key path and its
+resolved-key and unresolved-key behavior.
+
 List the known relevant deployments found in project, chain-operator, or other
 authoritative documentation, cite those sources, and compare the list with the
 descriptor's context. Arbitrary forks and contracts that merely share an ABI
@@ -58,13 +72,23 @@ has either failure result.
 Summarize the comparison of every reviewed signature, parameter name, type, and
 order with the verified ABI and implementation source.
 
+For a factory context, document the verified factory, deployment event, target
+association method, and why every accepted target has the reviewed behavior.
+For an EIP-712 context, document every domain constraint, domain separator,
+deployment, signature consumer, and replay boundary. If deprecated `abi` or
+`schemas` fields are present, reconcile them with the source, type definitions,
+and display formats.
+
 ## Function-by-Function Review
 
 ### `REPLACE_FUNCTION_SIGNATURE`
 
 - Selector or type identity, ABI, and source comparison:
 - Reachable execution paths and displayed intent:
+- Intent variants, interpolation, labels, grouping, and array behavior:
+- Definitions, references, maps, overrides, and conditional visibility:
 - Fields, formatting, and external-data sources:
+- Nested calldata, lookup fallbacks, and encrypted-field behavior:
 - Assets, approvals, transfers, recipients, spenders, and privileged actions:
 - Native-currency behavior and `@.value` handling:
 - Representative rendered output:
@@ -113,6 +137,10 @@ Describe token metadata, address-name, ENS, block, or other external-data trust
 assumptions used by the formatter. Confirm that the exact external metadata used
 by each test is recorded in its fixture.
 
+For every nested descriptor used to decode embedded calldata, record its exact
+source, hash, selection rule, and approval status. State explicitly that this
+audit of the outer descriptor does not approve the nested descriptor.
+
 ## Testing
 
 Record the exact Sourcify runner command, Git commit, and installed package
@@ -122,9 +150,12 @@ snapshot. List any additional chain-information lookups declared for a
 cross-chain format. Summarize normal-path and boundary
 fixtures for every reviewed format, including zero-value and nonzero-value cases
 when `msg.value` is relevant. Explain why any normally applicable boundary case
-was not tested. Confirm that the rendered intent, owner, field order, and every
-displayed value match the expected result in the fixture. For a negative test,
-confirm that the observed failure matches the expected error.
+was not tested. Exercise every applicable success, fallback, and error branch
+for interpolation, visibility, reference and map resolution, external lookups,
+array iteration, nested calldata, and encryption. Confirm that the rendered
+intent, owner, labels, field order, separators, and every displayed value match
+the expected result in the fixture. For a negative test, confirm that the
+observed failure matches the expected error.
 
 ## Findings
 
