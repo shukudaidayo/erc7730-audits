@@ -1,0 +1,120 @@
+{
+  "$schema": "../../../../schemas/audit-result-v1.schema.json",
+  "formatVersion": "1.0.0",
+  "policyVersion": "1.1.0",
+  "status": "needs-changes",
+  "auditor": {
+    "id": "eip155:1:0x9a659894e5D115846767dB0e1685744c452E7a6e",
+    "profile": "../../../../auditor/profile.json"
+  },
+  "descriptor": {
+    "source": {
+      "repository": "https://github.com/ethereum/clear-signing-erc7730-registry",
+      "commit": "8936407e503b319882d3c811c26c8648a8e449ca",
+      "path": "registry/consensus-specs/calldata-DepositContract.json"
+    },
+    "erc7730Version": "2.0.0",
+    "schema": {
+      "declaredReference": "../../specs/erc7730-v2.schema.json",
+      "snapshot": "erc7730-schema.json",
+      "hash": {
+        "standard": "ERC-8176",
+        "algorithm": "keccak256-rfc8785-jcs",
+        "value": "0x690cb47b8d4b847dbc9a9e29da75cb05d436b132900d57508ca12173f1f800b3"
+      }
+    },
+    "hash": {
+      "standard": "ERC-8176",
+      "algorithm": "keccak256-rfc8785-jcs",
+      "value": "0x9d842276d3d7ae727cae4e5596599553c47dab7ed59d5704790bcfb5970bd20f"
+    },
+    "snapshot": "descriptor.json"
+  },
+  "scope": {
+    "deployments": [
+      "eip155:1:0x00000000219ab540356cBB839Cbe05303d7705Fa",
+      "eip155:560048:0x00000000219ab540356cBB839Cbe05303d7705Fa"
+    ],
+    "formatsReviewed": [
+      {
+        "signature": "deposit(bytes pubkey, bytes withdrawal_credentials, bytes signature, bytes32 deposit_data_root)",
+        "selector": "0x22895118",
+        "result": "fail",
+        "boundaryRationale": "The fixtures cover a real 32 ETH mainnet deposit, cross-chain rendering on Hoodi, the verified contract's 1 ETH minimum, zero-value rendering, and the maximum value accepted by its uint64-gwei amount check. Zero ETH would revert onchain, but its rendering is retained because the descriptor uses @.value and the signer must still see the attempted amount. The Hoodi fixture reuses mainnet deposit calldata and is not evidence of successful Hoodi consensus processing. The generated amount-boundary fixtures reuse the 32 ETH fixture's BLS signature, so they test rendering and EVM-level bounds rather than consensus-valid new-validator deposits.",
+        "notes": "The verified contract checks exact byte lengths, a 1 ETH minimum, gwei granularity, a uint64-gwei maximum, and a deposit-data root reconstructed from every argument and msg.value. The descriptor displays the validator public key, the submitted withdrawal credentials, and msg.value, and it hides the 96-byte BLS signature and deposit-data root. The EVM contract does not verify the signature or determine whether the public key is already registered. Consensus processing verifies the signature and applies the submitted withdrawal credentials only for a new validator; for an existing validator, it ignores both values and credits the balance governed by the validator's pre-existing withdrawal credentials. The descriptor cannot distinguish these materially different branches; see F-001."
+      }
+    ]
+  },
+  "findings": [
+    {
+      "id": "F-001",
+      "severity": "high",
+      "blocking": true,
+      "status": "open",
+      "title": "The display cannot distinguish validator registration from a top-up",
+      "description": "Consensus processing has materially different branches that the EVM contract and descriptor do not distinguish. For a new validator public key, consensus registers the validator and applies the submitted withdrawal credentials only if the BLS signature verifies. The EVM contract accepts any 96-byte signature included in a matching deposit-data root, so the transaction can succeed and retain the ETH even when consensus does not register the validator. For an existing validator public key, consensus ignores the supplied signature and withdrawal credentials and credits the validator whose pre-existing withdrawal credentials remain in force. The descriptor always hides the signature, displays the submitted withdrawal credentials as though they were effective, and renders Stake ETH identically for both branches. Because the declared ERC-7730 schema cannot enforce signature validity or distinguish new from existing validators, this descriptor cannot receive a positive attestation under policy 1.1.0.",
+      "affectedFormats": [
+        "deposit(bytes pubkey, bytes withdrawal_credentials, bytes signature, bytes32 deposit_data_root)"
+      ]
+    }
+  ],
+  "limitations": [
+    {
+      "id": "L-001",
+      "type": "omitted-deployment",
+      "reason": "behavior-not-compatible",
+      "deployments": [
+        "eip155:11155111:0x7f02C3E3c98b133055B8B348B2Ac625669Ed295D"
+      ],
+      "sources": [
+        "https://github.com/eth-clients/sepolia/blob/a284cd3ca509b0ac86bc1d885c62debcf0b901d5/metadata/config.yaml",
+        "https://github.com/ethereum/EIPs/blob/0849adda4f2eb83d6224c92346d38f8e2644054f/EIPS/eip-6110.md",
+        "https://eth-sepolia.blockscout.com/tx/0xa05892f36961ad3908820dcae3b952800b080ba446cc5385bfad490051435618"
+      ],
+      "impact": "Sepolia uses a behaviorally different deposit contract that burns one zero-decimal BEPOLIA token from the caller and refunds the full ETH value after emitting the validator DepositEvent. This descriptor displays neither the token burn nor the refund and must not be applied to the Sepolia deployment. Sepolia requires a separate descriptor that represents those additional effects."
+    },
+    {
+      "id": "L-002",
+      "type": "omitted-deployment",
+      "reason": "legacy-network",
+      "deployments": [
+        "eip155:17000:0x4242424242424242424242424242424242424242"
+      ],
+      "sources": [
+        "https://github.com/eth-clients/hoodi/blob/30b866a757f4701644f2edbeb81bafcbf5ad629d/README.md",
+        "https://github.com/eth-clients/holesky/blob/64e379f3ed110dbd5f018ae512e25564eaa293c5/README.md"
+      ],
+      "impact": "The former Holesky staking-testnet deposit contract is absent from the descriptor and receives no coverage. The Ethereum testnet configuration describes Hoodi as Holesky's replacement, so this audit records Holesky as legacy instead of proposing it for current descriptor coverage."
+    }
+  ],
+  "testing": {
+    "fixture": "tests.json",
+    "result": "pass",
+    "results": "test-results.json",
+    "tool": "@ethereum-sourcify/clear-signing-test-runner",
+    "toolVersion": "@ethereum-sourcify/clear-signing-test-runner@0.1.0 / @ethereum-sourcify/clear-signing@0.2.2",
+    "toolCommit": "dae3cdabd0eab26173d7f7a31a2ca7e75bf07daf",
+    "command": "node scripts/run-audit-tests.mjs audits/consensus-specs/calldata-DepositContract/0x9d842276d3d7ae727cae4e5596599553c47dab7ed59d5704790bcfb5970bd20f",
+    "externalData": [
+      {
+        "name": "Resolved chain information used by rendering tests",
+        "format": "chain-info-v1",
+        "source": "https://chainid.network/chains_mini.json",
+        "snapshot": "test-chain-info.json",
+        "capturedAt": "2026-08-30T18:52:03Z",
+        "hash": {
+          "algorithm": "sha256",
+          "value": "0x870f088f3fea4df88d7ff562339994fc01e834b807f0ceeb4012c90c5410a829"
+        }
+      }
+    ]
+  },
+  "evidence": {
+    "deployments": "deployments.json",
+    "dependencies": "dependencies.json",
+    "report": "REPORT.md"
+  },
+  "createdAt": "2026-08-29T02:11:07Z",
+  "reviewedAt": "2026-08-30T19:01:47Z",
+  "notes": "NEGATIVE RESULT: F-001 is independently sufficient to require descriptor changes and block a positive attestation. The review did not resolve the descriptor's association of the Ethereum Foundation owner and information URL with this contract; authoritative support that the Foundation created, maintains, governs, or officially operates the deposit contract, or is its intended counterparty or beneficiary, was not established. The negative result is therefore conclusive but not an approval-style completion of every otherwise required identity check."
+}

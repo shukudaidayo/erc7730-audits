@@ -1,7 +1,15 @@
 {
   "formatVersion": "1.0.0",
-  "latestRecordAt": "2026-08-28T08:19:30Z",
+  "latestRecordAt": "2026-08-30T19:01:47Z",
   "entries": {
+    "eip155:1:0x00000000219ab540356cbb839cbe05303d7705fa": [
+      {
+        "descriptorHash": "0x9d842276d3d7ae727cae4e5596599553c47dab7ed59d5704790bcfb5970bd20f",
+        "status": "needs-changes",
+        "auditor": "eip155:1:0x9a659894e5D115846767dB0e1685744c452E7a6e",
+        "dossier": "audits/consensus-specs/calldata-DepositContract/0x9d842276d3d7ae727cae4e5596599553c47dab7ed59d5704790bcfb5970bd20f"
+      }
+    ],
     "eip155:1:0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2": [
       {
         "descriptorHash": "0x20de898a28022b1678a43f6c2ee75d3dd700ddfbd48f7770897c05472871dae7",
@@ -16,6 +24,14 @@
         "status": "approved",
         "auditor": "eip155:1:0x9a659894e5D115846767dB0e1685744c452E7a6e",
         "dossier": "audits/weth/calldata-weth/0x20de898a28022b1678a43f6c2ee75d3dd700ddfbd48f7770897c05472871dae7"
+      }
+    ],
+    "eip155:560048:0x00000000219ab540356cbb839cbe05303d7705fa": [
+      {
+        "descriptorHash": "0x9d842276d3d7ae727cae4e5596599553c47dab7ed59d5704790bcfb5970bd20f",
+        "status": "needs-changes",
+        "auditor": "eip155:1:0x9a659894e5D115846767dB0e1685744c452E7a6e",
+        "dossier": "audits/consensus-specs/calldata-DepositContract/0x9d842276d3d7ae727cae4e5596599553c47dab7ed59d5704790bcfb5970bd20f"
       }
     ]
   }
