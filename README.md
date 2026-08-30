@@ -125,7 +125,11 @@ It copies the descriptor and schema byte-for-byte, initializes the JSON records,
 and fills in the report's identity fields. There is no separate manual hashing
 step: the verifier recomputes the hashes when you validate the dossier.
 
-4. Classify each declared deployment before starting the function-level review
+4. Confirm every user-visible identity in the descriptor's `metadata`, and
+   record authoritative support in the report. In particular, do not treat the
+   submitter, deployer address, repository namespace, or a URL declared by the
+   descriptor as sufficient evidence for `owner`. Then classify each declared
+   deployment before starting the function-level review
    as `pass-direct`, `pass-bindable-proxy`, `fail-source-verification`, or
    `fail-descriptor-binding`. Complete the generated evidence and report only
    after the descriptor passes this pre-filter. The
