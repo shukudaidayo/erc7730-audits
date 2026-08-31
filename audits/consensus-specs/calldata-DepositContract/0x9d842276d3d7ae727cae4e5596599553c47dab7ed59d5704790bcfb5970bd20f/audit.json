@@ -40,8 +40,8 @@
         "signature": "deposit(bytes pubkey, bytes withdrawal_credentials, bytes signature, bytes32 deposit_data_root)",
         "selector": "0x22895118",
         "result": "fail",
-        "boundaryRationale": "The fixtures cover a real 32 ETH mainnet deposit, cross-chain rendering on Hoodi, the verified contract's 1 ETH minimum, zero-value rendering, and the maximum value accepted by its uint64-gwei amount check. Zero ETH would revert onchain, but its rendering is retained because the descriptor uses @.value and the signer must still see the attempted amount. The Hoodi fixture reuses mainnet deposit calldata and is not evidence of successful Hoodi consensus processing. The generated amount-boundary fixtures reuse the 32 ETH fixture's BLS signature, so they test rendering and EVM-level bounds rather than consensus-valid new-validator deposits.",
-        "notes": "The verified contract checks exact byte lengths, a 1 ETH minimum, gwei granularity, a uint64-gwei maximum, and a deposit-data root reconstructed from every argument and msg.value. The descriptor displays the validator public key, the submitted withdrawal credentials, and msg.value, and it hides the 96-byte BLS signature and deposit-data root. The EVM contract does not verify the signature or determine whether the public key is already registered. Consensus processing verifies the signature and applies the submitted withdrawal credentials only for a new validator; for an existing validator, it ignores both values and credits the balance governed by the validator's pre-existing withdrawal credentials. The descriptor cannot distinguish these materially different branches; see F-001."
+        "boundaryRationale": "The fixtures cover a real 32 ETH mainnet deposit, cross-chain rendering on Hoodi, the verified contract's 1 ETH minimum, zero-value rendering, and the maximum value accepted by its uint64-gwei amount check. The 1 ETH fixture demonstrates that the static intent remains Stake ETH below the 32 ETH activation threshold established by the pinned Electra rules. The real transaction uses 0x01 withdrawal credentials and demonstrates that the renderer preserves the undivided raw bytes instead of identifying the credential type or execution-layer withdrawal address. Zero ETH would revert onchain, but its rendering is retained because the descriptor uses @.value and the signer must still see the attempted amount. The Hoodi fixture reuses mainnet deposit calldata and is not evidence of successful Hoodi consensus processing. The generated amount-boundary fixtures reuse the 32 ETH fixture's BLS signature, so they test rendering and EVM-level bounds rather than consensus-valid new-validator deposits.",
+        "notes": "The verified contract checks exact byte lengths, a 1 ETH minimum, gwei granularity, a uint64-gwei maximum, and a deposit-data root reconstructed from every argument and msg.value. The descriptor displays the validator public key, the submitted withdrawal credentials, and msg.value, and it hides the 96-byte BLS signature and deposit-data root. The EVM contract does not verify the signature or determine whether the public key is already registered. Under the pinned Electra rules, an eligible pending deposit has three relevant outcomes: an existing public key receives a top-up that ignores the submitted signature and withdrawal credentials; a new public key with a valid signature creates a validator governed by the submitted credentials; and a new public key with an invalid signature creates and credits no validator. The descriptor cannot distinguish these outcomes; see F-001. The same rules require an accumulated balance of at least 32 ETH for activation eligibility, so a valid smaller deposit can create or fund a validator without making it activation-eligible. Because the exact amount is shown and remains validator stake, that wording concern is recorded as an intent nuance rather than a separate finding. The descriptor also renders the tagged withdrawal-credentials value as opaque bytes without explaining the withdrawal mode or destination; see F-002. ERC-7730 v2 path slices permit the descriptor to expose the prefix, payload, and final 20 bytes separately, so F-002 is directly addressable in the descriptor."
       }
     ]
   },
@@ -51,8 +51,19 @@
       "severity": "high",
       "blocking": true,
       "status": "open",
-      "title": "The display cannot distinguish validator registration from a top-up",
-      "description": "Consensus processing has materially different branches that the EVM contract and descriptor do not distinguish. For a new validator public key, consensus registers the validator and applies the submitted withdrawal credentials only if the BLS signature verifies. The EVM contract accepts any 96-byte signature included in a matching deposit-data root, so the transaction can succeed and retain the ETH even when consensus does not register the validator. For an existing validator public key, consensus ignores the supplied signature and withdrawal credentials and credits the validator whose pre-existing withdrawal credentials remain in force. The descriptor always hides the signature, displays the submitted withdrawal credentials as though they were effective, and renders Stake ETH identically for both branches. Because the declared ERC-7730 schema cannot enforce signature validity or distinguish new from existing validators, this descriptor cannot receive a positive attestation under policy 1.1.0.",
+      "title": "The display cannot distinguish consensus deposit outcomes",
+      "description": "Consensus processing has three materially different outcomes that the EVM contract and descriptor do not distinguish. An existing validator public key receives a top-up, while the submitted signature and withdrawal credentials are ignored. A new validator public key with a valid BLS signature creates a validator governed by the submitted withdrawal credentials. A new validator public key with an invalid BLS signature creates and credits no validator, even though the EVM transaction can succeed and retain the ETH. The descriptor always hides the signature, displays the submitted withdrawal credentials as though they were effective, and renders Stake ETH identically for all three outcomes. Because the declared ERC-7730 schema cannot enforce signature validity or distinguish new from existing validators, this descriptor cannot receive a positive attestation under policy 1.1.0.",
+      "affectedFormats": [
+        "deposit(bytes pubkey, bytes withdrawal_credentials, bytes signature, bytes32 deposit_data_root)"
+      ]
+    },
+    {
+      "id": "F-002",
+      "severity": "medium",
+      "blocking": true,
+      "status": "open",
+      "title": "Withdrawal credentials are displayed as opaque bytes",
+      "description": "The 32-byte withdrawal_credentials value is tagged by its first byte. Under the pinned consensus rules, 0x00 contains a legacy BLS withdrawal-key commitment, while 0x01 and 0x02 carry an execution-layer withdrawal address in their final 20 bytes; 0x02 also selects compounding-validator behavior. The descriptor labels the field Withdraw credentials and applies the raw formatter to the complete value. In the representative 0x01 transaction, it does not identify the credential type or present 0x7e2a2fa2a064f693f0a55c5639476d913ff12d05 as the withdrawal address. The signer therefore receives the exact bytes but not a human-readable account of the withdrawal mode and destination that can control the deposited ETH. This remains material for a new validator with a valid signature and is independent of F-001. ERC-7730 v2 path slices permit the descriptor to map the first byte to a human-readable type, preserve the remaining payload, and expose the final 20 bytes separately. Because v2 visibility cannot make the final field depend on the prefix slice, its label and format must remain accurate for 0x00 rather than always treating it as an address. Policy 1.1.0 therefore blocks a positive attestation until the descriptor explains the credential meaning, and a revised descriptor should test 0x00, 0x01, and 0x02.",
       "affectedFormats": [
         "deposit(bytes pubkey, bytes withdrawal_credentials, bytes signature, bytes32 deposit_data_root)"
       ]
@@ -101,7 +112,7 @@
         "format": "chain-info-v1",
         "source": "https://chainid.network/chains_mini.json",
         "snapshot": "test-chain-info.json",
-        "capturedAt": "2026-08-30T18:52:03Z",
+        "capturedAt": "2026-08-31T23:11:21Z",
         "hash": {
           "algorithm": "sha256",
           "value": "0x870f088f3fea4df88d7ff562339994fc01e834b807f0ceeb4012c90c5410a829"
@@ -115,6 +126,6 @@
     "report": "REPORT.md"
   },
   "createdAt": "2026-08-29T02:11:07Z",
-  "reviewedAt": "2026-08-30T19:01:47Z",
-  "notes": "NEGATIVE RESULT: F-001 is independently sufficient to require descriptor changes and block a positive attestation. The review did not resolve the descriptor's association of the Ethereum Foundation owner and information URL with this contract; authoritative support that the Foundation created, maintains, governs, or officially operates the deposit contract, or is its intended counterparty or beneficiary, was not established. The negative result is therefore conclusive but not an approval-style completion of every otherwise required identity check."
+  "reviewedAt": "2026-08-31T23:33:14Z",
+  "notes": "NEGATIVE RESULT: F-001 and F-002 independently require changes and block a positive attestation."
 }

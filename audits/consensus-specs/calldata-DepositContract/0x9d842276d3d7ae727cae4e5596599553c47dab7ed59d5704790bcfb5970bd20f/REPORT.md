@@ -4,23 +4,18 @@
 
 Status: **needs-changes**
 
-The review reached a supported negative conclusion because of one independently
-blocking issue. Consensus
-processing treats a new-validator registration differently from an
-existing-validator top-up, but the descriptor cannot distinguish them. An
-invalid BLS signature can produce a successful EVM deposit without registering
-a new validator, while an existing-validator top-up ignores both the submitted
-signature and the displayed withdrawal credentials. F-001 therefore requires
-descriptor or consumer changes and prevents a positive attestation.
-
-This negative result is conclusive but not an approval-style completion of
-every otherwise required identity check. The descriptor associates the
-`Ethereum Foundation` owner and `https://ethereum.foundation` information URL
-with this contract, and the evidence collected did not establish that the
-Foundation created, maintains, governs, or officially operates the deposit
-contract, or is its intended counterparty or beneficiary. Resolving that
-attribution would not remove F-001. Sepolia remains behaviorally incompatible,
-and Holesky remains an uncovered legacy network.
+The review reached a supported negative conclusion because of two blocking
+issues. The descriptor cannot distinguish three consensus outcomes: a top-up
+of an existing validator, registration of a new validator with a valid BLS
+signature, and rejection of a new validator with an invalid BLS signature.
+The latter can follow a successful EVM deposit without crediting a validator,
+while an existing-validator top-up ignores both the submitted signature and
+the displayed withdrawal credentials. Separately, the descriptor renders the
+withdrawal credentials as opaque bytes without identifying the withdrawal mode
+or destination they encode. F-001 requires outcome-neutral descriptor language
+or support for validating and explaining the relevant conditions. F-002 can be
+addressed directly in ERC-7730 v2 using path slices. Both findings prevent a
+positive attestation.
 
 ## Descriptor Identity
 
@@ -35,7 +30,7 @@ and Holesky remains an uncovered legacy network.
 | ERC-8176 hash | `0x9d842276d3d7ae727cae4e5596599553c47dab7ed59d5704790bcfb5970bd20f` |
 | Auditor | `eip155:1:0x9a659894e5D115846767dB0e1685744c452E7a6e` |
 | Dossier created | `2026-08-29T02:11:07Z` |
-| Review completed | `2026-08-30T19:01:47Z` |
+| Review completed | `2026-08-31T23:33:14Z` |
 
 The descriptor snapshot came from the [registry at the recorded
 commit](https://github.com/ethereum/clear-signing-erc7730-registry/blob/8936407e503b319882d3c811c26c8648a8e449ca/registry/consensus-specs/calldata-DepositContract.json).
@@ -61,14 +56,29 @@ paths. The omitted Sepolia and legacy Holesky deployments are recorded under
 
 The [official Solidity deposit-contract
 repository](https://github.com/ethereum/solidity-deposit-contract/tree/5bf2741b50c58b844225f89018041c5d54726f8e)
-contains the audited [deposit contract
+contains the deployed [deposit contract
 source](https://github.com/ethereum/solidity-deposit-contract/blob/5bf2741b50c58b844225f89018041c5d54726f8e/deposit_contract.sol)
 and documents the mainnet address. The contract accepts validator deposit data,
 emits it for the consensus layer, and maintains the deposit-data Merkle tree.
+An [Ethereum Foundation development
+update](https://blog.ethereum.org/2020/06/23/eth2-quick-update-no-12)
+states that this Solidity rewrite was reviewed by Solidity experts and formally
+verified by Runtime Verification. The review and verification evidence is
+external to the contract repository.
+
 The [consensus validator
 specification](https://github.com/ethereum/consensus-specs/blob/3434cc69d695604ea52253e31486f46ba0e36901/specs/phase0/validator.md)
 documents the validator public key, withdrawal credentials, amount, signature,
 and deposit-data root used to create a deposit.
+
+Withdrawal credentials are a 32-byte tagged value that controls how validator
+withdrawals are authorized and routed. The first byte selects the credential
+type. Under the pinned Phase 0 rules, `0x00` contains a legacy BLS
+withdrawal-key commitment, while `0x01` places an execution-layer withdrawal
+address in the final 20 bytes. The pinned [Electra
+rules](https://github.com/ethereum/consensus-specs/blob/3434cc69d695604ea52253e31486f46ba0e36901/specs/electra/beacon-chain.md)
+add `0x02`, which also carries an execution-layer address and selects
+compounding-validator behavior.
 
 The descriptor and its initial test were added by Manuel Wedler in registry
 commit [`3b66ba2`](https://github.com/ethereum/clear-signing-erc7730-registry/commit/3b66ba289cd3988ea791346629445f9ab6ae86f3)
@@ -81,12 +91,20 @@ contract or deployment evidence.
 The descriptor declares `owner` as `Ethereum Foundation`, `contractName` as
 `DepositContract`, and `info.url` as `https://ethereum.foundation`. The verified
 source and official deposit-contract repository support `DepositContract` as
-the contract name, and the URL itself is the Foundation's website. Neither
-those sources, the consensus specification, nor the descriptor pull request
-establishes the declared relationship between the Foundation and the target
-contract. The review therefore treats both the `owner` attribution and the
-association implied by `info.url` as unresolved rather than inferring that
-relationship from the URL or the repository's `ethereum` namespace.
+the contract name, and the URL is the Foundation's official website. An
+[official Foundation development
+update](https://blog.ethereum.org/2020/12/09/ef-supported-teams-research-and-development-update-2020-pt-2)
+states that an EF-supported team led the Solidity rewrite of the deposit
+contract and that the implementation was adopted into the Eth2 specification.
+The Foundation also [announced the v1.0 specification and mainnet deposit
+address](https://blog.ethereum.org/2020/11/04/eth2-quick-update-no-19). These
+first-party sources support the descriptor's Foundation attribution and
+information URL as development provenance.
+
+The attribution does not imply literal onchain ownership or administrative
+control. The verified deployment has no owner or administrator, and the
+deposit contract is protocol infrastructure rather than a contract operated by
+the Foundation as the transaction's counterparty or beneficiary.
 
 The descriptor declares no deployment date, token metadata, constants, enums,
 or maps. There are therefore no additional metadata values or map-resolution
@@ -154,17 +172,21 @@ runtime dispatcher and the recorded selector.
   root reconstructed from all inputs, and available Merkle-tree capacity. A
   successful EVM call emits a deposit event and updates the deposit tree, but
   this is not enough to establish the displayed `Stake ETH` outcome. Under the
-  [consensus deposit-processing
-  rules](https://github.com/ethereum/consensus-specs/blob/3434cc69d695604ea52253e31486f46ba0e36901/specs/phase0/beacon-chain.md),
-  a new validator is registered, and its submitted withdrawal credentials are
-  applied, only if its BLS signature verifies. An existing validator public key
-  instead follows a top-up branch that ignores the supplied signature and
-  withdrawal credentials, increases the existing validator's balance, and
-  leaves its pre-existing withdrawal credentials in force.
+  current pinned [Electra deposit-processing
+  rules](https://github.com/ethereum/consensus-specs/blob/3434cc69d695604ea52253e31486f46ba0e36901/specs/electra/beacon-chain.md),
+  the deposit enters consensus processing as a pending deposit. When it becomes
+  eligible for application, an existing validator public key receives a top-up
+  that ignores the submitted signature and withdrawal credentials. A new
+  validator public key creates a validator record, and applies the submitted
+  withdrawal credentials, only if its BLS signature verifies. If the signature
+  is invalid, no validator is created or credited even though the EVM
+  transaction succeeded and retained the ETH.
 - **Text and layout:** The format uses one simple intent and has no interpolated
-  or alternate intent. Its three displayed labels accurately identify the
-  validator key, withdrawal credentials, and deposit amount. It uses no field
-  groups, separators, array iteration, or nested layout.
+  or alternate intent. Its labels identify the validator key, the raw
+  withdrawal-credentials argument, and the deposit amount, but the abbreviated
+  `Withdraw credentials` label does not explain the credential's withdrawal
+  mode or destination. It uses no field groups, separators, array iteration, or
+  nested layout.
 - **References and visibility:** The format uses direct parameter paths and has
   no definitions, references, literal values, overrides, constants, enums, or
   maps. The validator key, withdrawal credentials, and amount are always
@@ -174,10 +196,14 @@ runtime dispatcher and the recorded selector.
 - **Displayed fields:** The renderer shows the complete validator public key,
   the submitted withdrawal credentials as raw bytes, and `@.value` as an ETH
   amount, in that order. The public key and amount identify the validator and
-  value being credited. The displayed withdrawal credentials establish
-  withdrawal authority only when consensus accepts a new validator; they are
-  ignored for an existing-validator top-up, whose pre-existing credentials
-  remain effective.
+  value being credited. The withdrawal-credentials prefix selects legacy BLS,
+  execution-address, or compounding behavior, and `0x01` and `0x02` credentials
+  carry the withdrawal address in their final 20 bytes. The display neither
+  identifies that type nor isolates the address for review. This is the open
+  blocking finding F-002. The submitted credentials establish withdrawal
+  authority only when consensus accepts a new validator; they are ignored for
+  an existing-validator top-up, whose pre-existing credentials remain
+  effective.
 - **Hidden cryptographic inputs:** The descriptor always hides the 96-byte
   signature and `deposit_data_root`. The root commits to the public key,
   withdrawal credentials, amount, and signature, and the EVM contract verifies
@@ -195,28 +221,44 @@ runtime dispatcher and the recorded selector.
 - **Assets and privileged actions:** The call has no ERC-20 approval or
   transfer, spender, administrator, role grant, or external call. The target is
   fixed by the descriptor context. Withdrawal authority is carried by the
-  displayed credentials rather than a Solidity recipient parameter.
+  displayed credentials rather than a Solidity recipient parameter, but the
+  raw display does not explain that authority or extract an execution-layer
+  destination when present.
 - **Derived, nested, and encrypted formatting:** The format uses only `raw` and
   native-currency `amount` formatting. It has no name or token lookup, nested
   calldata, cross-chain field, threshold message, NFT, date, duration, unit,
   enum, interoperable address, or encrypted field. No corresponding lookup,
-  decoding, decryption, or fallback path applies.
+  decoding, decryption, or fallback path applies. In particular, it contains no
+  formatter or derived fields for the tagged withdrawal-credentials value.
+  ERC-7730 v2 path slices could expose the prefix and other byte ranges as
+  separate fields, but the reviewed descriptor does not use them.
 - **Native currency:** `msg.value` is the deposit amount and is always displayed
   using the tested chain's 18-decimal ETH metadata. Zero and nonzero values are
   both rendered. The zero-value fixture demonstrates the attempted amount but
   would revert under the verified 1 ETH minimum.
+- **Activation threshold:** The contract accepts deposits from 1 ETH, but the
+  pinned Electra rules require a validator to accumulate at least 32 ETH before
+  it is eligible for activation. A valid deposit below 32 ETH can create or
+  fund a validator record without making it activation-eligible. The `Stake
+  ETH` wording may suggest a more immediate result, but the display shows the
+  exact amount, and the deposit is still credited toward the validator's stake.
+  This is an intent nuance rather than a separate finding.
 - **Representative output:** A successful real mainnet transaction renders
   `Stake ETH`, owner `Ethereum Foundation`, the 48-byte validator key, the full
   `0x01` withdrawal credentials ending in
   `0x7e2a2fa2a064f693f0a55c5639476d913ff12d05`, and `32 ETH`. Hoodi renders the
-  same fields with Hoodi's native ETH metadata; that cross-chain fixture is not
-  used as evidence of successful Hoodi consensus processing.
+  same fields with Hoodi's native ETH metadata. The renderer does not identify
+  `0x01` as execution-address credentials or present the final 20 bytes as the
+  withdrawal address. The cross-chain fixture is not used as evidence of
+  successful Hoodi consensus processing.
 - **Result:** **Fail.** The same display can describe materially different
   consensus outcomes, and the declared schema cannot enforce BLS-signature
   validity, determine whether the public key is already registered, or show the
-  withdrawal credentials that actually govern an existing validator. This is
-  the open blocking finding F-001. The descriptor-wide identity review also
-  remains incomplete.
+  withdrawal credentials that actually govern an existing validator. The raw
+  credentials also do not give the signer a human-readable withdrawal mode or
+  destination even when they would govern a new validator. These are the open
+  blocking findings F-001 and F-002. The descriptor-wide identity review passes
+  independently of the format findings.
 
 ## Proxy and Intent-Mutability Analysis
 
@@ -260,7 +302,8 @@ It used `@ethereum-sourcify/clear-signing-test-runner@0.1.0` at commit
    deposit](https://etherscan.io/tx/0x79786d7d8e1d37613e54e922f512b59cfb6f78c1003d22d4b8e2fcfd671e0cd7).
 2. A 32 ETH Hoodi rendering using the mainnet deposit calldata, for cross-chain
    renderer coverage rather than evidence of successful consensus processing.
-3. The verified contract's 1 ETH minimum.
+3. The verified contract's 1 ETH minimum, which also demonstrates that the
+   static intent remains `Stake ETH` below the 32 ETH activation threshold.
 4. Zero-value rendering, which displays `0 ETH` even though the contract would
    reject the transaction.
 5. The contract's maximum accepted amount representation,
@@ -285,12 +328,24 @@ additional rendering fixture. The runner does not expose `contractName` or
 descriptor snapshot, verified source, official project material, and the
 declared website. The runner also cannot evaluate BLS validity or consensus
 deposit processing, so the exact alternative method was a static path
-comparison between the pinned verified EVM source and pinned consensus
-specification. That comparison produced F-001.
+comparison between the pinned verified EVM source and pinned Electra consensus
+specification. That comparison established the three consensus outcomes in
+F-001 and the 32 ETH activation threshold. Because the 1 ETH fixture reuses a
+signature for a different amount, it is not itself evidence of a
+consensus-valid new-validator deposit.
+
+The real mainnet fixture also demonstrates F-002. Its `0x01` credentials encode
+the execution-layer withdrawal address
+`0x7e2a2fa2a064f693f0a55c5639476d913ff12d05`, but the output preserves only the
+label `Withdraw credentials` and the undivided 32-byte value. The descriptor has
+no value-dependent formatting branch, so additional `0x00` and `0x02` fixtures
+would reproduce the same raw treatment rather than exercise a different output
+path. If the descriptor is revised to decode the prefix, its tests should cover
+`0x00`, `0x01`, and `0x02` because the expected descriptions would then differ.
 
 ## Findings
 
-### F-001: The Display Cannot Distinguish Validator Registration From a Top-Up
+### F-001: The Display Cannot Distinguish Consensus Deposit Outcomes
 
 | Property | Value |
 | --- | --- |
@@ -298,30 +353,65 @@ specification. That comparison produced F-001.
 | Blocking | **Yes** |
 | Status | **Open** |
 
-Consensus processing has materially different branches that the EVM contract
-and descriptor do not distinguish. For a new validator public key, consensus
-registers the validator and applies the submitted withdrawal credentials only
-if the BLS signature verifies. The EVM deposit contract accepts any 96-byte
-signature whose bytes are included in a matching deposit-data root, so the
-transaction can succeed and retain the ETH even when consensus processing does
-not register the validator. For an existing validator public key, consensus
-ignores the supplied signature and withdrawal credentials, credits the existing
-validator's balance, and leaves its pre-existing withdrawal credentials in
-force.
+Consensus processing has three materially different outcomes that the EVM
+contract and descriptor do not distinguish. An existing validator public key
+receives a top-up, while the submitted signature and withdrawal credentials are
+ignored. A new validator public key with a valid BLS signature creates a
+validator record governed by the submitted withdrawal credentials. A new
+validator public key with an invalid BLS signature creates and credits no
+validator, even though the EVM transaction can succeed and retain the ETH.
 
 The descriptor always hides the signature, displays the submitted withdrawal
 credentials as though they were effective, and renders `Stake ETH` identically
-for both branches. That can hide a failed new-validator registration or make a
-top-up appear to have withdrawal authority that it does not have.
+for all three outcomes. That can hide a failed new-validator registration or
+make a top-up appear to have withdrawal authority that it does not have.
 
 The declared ERC-7730 schema cannot enforce BLS-signature validity, query
 whether the public key is already registered, or otherwise distinguish these
-branches. Merely displaying the raw signature would not make its validity
+outcomes. Merely displaying the raw signature would not make its validity
 understandable. A positive attestation is therefore blocked unless the
-descriptor and its consuming wallet can provide a clear-signing treatment that
-makes the authorization accurate for both branches, or the applicable standard
-and audit policy establish a safe, explicit treatment for this cross-layer
-condition.
+format uses outcome-neutral language and does not present the submitted
+credentials as effective, or the applicable standard and its implementations
+can validate and clearly explain the relevant conditions. Removing the
+function format would also remove the inaccurate function-level rendering.
+
+### F-002: Withdrawal Credentials Are Displayed as Opaque Bytes
+
+| Property | Value |
+| --- | --- |
+| Severity | **Medium** |
+| Blocking | **Yes** |
+| Status | **Open** |
+
+The `withdrawal_credentials` argument is a tagged 32-byte value that determines
+how withdrawals are controlled. `0x00` credentials contain a legacy BLS
+withdrawal-key commitment. `0x01` and `0x02` credentials contain an
+execution-layer withdrawal address in their final 20 bytes, and `0x02`
+additionally selects compounding-validator behavior.
+
+The descriptor labels this field `Withdraw credentials` and displays the
+complete value using the `raw` formatter. In the representative `0x01` fixture,
+it does not identify the credential type or present
+`0x7e2a2fa2a064f693f0a55c5639476d913ff12d05` as the withdrawal address. A signer
+therefore receives the exact bytes but not the human-readable withdrawal mode
+and destination that can control the deposited ETH. This remains material even
+when the public key is new and the signature is valid, so it is independent of
+F-001.
+
+Policy 1.1.0 requires user-visible text to be accurate and unambiguous and each
+rendered transaction to show the information needed to understand the
+authorization. A positive attestation is therefore blocked until the descriptor
+explains the credential type and its withdrawal-control meaning.
+
+The pinned [ERC-7730 path-slice
+rules](https://github.com/ethereum/clear-signing-erc7730-registry/blob/8936407e503b319882d3c811c26c8648a8e449ca/specs/erc-7730.md#path-slices)
+permit a descriptor-level fix. The descriptor can map
+`#.withdrawal_credentials.[0:1]` to a human-readable credential type, preserve
+the remaining payload with `#.withdrawal_credentials.[1:]`, and expose the
+final 20 bytes separately. Because v2 visibility rules cannot make that final
+field depend on the prefix slice, its label and format must remain accurate for
+`0x00` rather than unconditionally treating the value as an address. A revised
+descriptor should test all three recognized prefixes.
 
 ## Coverage Limitations
 
@@ -358,7 +448,6 @@ to the Holesky address.
 ## Attestation
 
 No positive attestation has been created. The dossier has a `needs-changes`
-result because F-001 blocks a positive attestation for this descriptor hash.
-The unresolved `owner` and `info.url` relationship is recorded as an additional
-unfinished identity question, but resolving it would not change the negative
-result.
+result because F-001 and F-002 block a positive attestation for this descriptor
+hash. The descriptor's `owner`, `contractName`, and `info.url` metadata were
+verified, but that does not change the negative result.
