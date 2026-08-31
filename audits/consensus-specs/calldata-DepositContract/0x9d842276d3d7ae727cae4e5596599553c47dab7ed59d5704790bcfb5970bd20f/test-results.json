@@ -1,0 +1,116 @@
+{
+  "runner": "@ethereum-sourcify/clear-signing-test-runner",
+  "implementation": "@ethereum-sourcify/clear-signing@0.2.2",
+  "cases": [
+    {
+      "description": "Stake 32 ETH on Ethereum mainnet (real transaction)",
+      "status": "pass",
+      "rendered": {
+        "intent": "Stake ETH",
+        "fields": [
+          {
+            "label": "Validator public key",
+            "value": "0xa80c17e64f6172e5ab7bb1399d260b3684b0e70f99646f3fa7b4ef13a81963b245584b364f12ca3c465e20a23f548cdf"
+          },
+          {
+            "label": "Withdraw credentials",
+            "value": "0x0100000000000000000000007e2a2fa2a064f693f0a55c5639476d913ff12d05"
+          },
+          {
+            "label": "Amount to deposit",
+            "value": "32 ETH"
+          }
+        ],
+        "owner": "Ethereum Foundation"
+      }
+    },
+    {
+      "description": "Render 32 ETH on Hoodi using mainnet deposit calldata",
+      "status": "pass",
+      "rendered": {
+        "intent": "Stake ETH",
+        "fields": [
+          {
+            "label": "Validator public key",
+            "value": "0xa80c17e64f6172e5ab7bb1399d260b3684b0e70f99646f3fa7b4ef13a81963b245584b364f12ca3c465e20a23f548cdf"
+          },
+          {
+            "label": "Withdraw credentials",
+            "value": "0x0100000000000000000000007e2a2fa2a064f693f0a55c5639476d913ff12d05"
+          },
+          {
+            "label": "Amount to deposit",
+            "value": "32 ETH"
+          }
+        ],
+        "owner": "Ethereum Foundation"
+      }
+    },
+    {
+      "description": "Render the one ETH contract minimum on Ethereum mainnet",
+      "status": "pass",
+      "rendered": {
+        "intent": "Stake ETH",
+        "fields": [
+          {
+            "label": "Validator public key",
+            "value": "0xa80c17e64f6172e5ab7bb1399d260b3684b0e70f99646f3fa7b4ef13a81963b245584b364f12ca3c465e20a23f548cdf"
+          },
+          {
+            "label": "Withdraw credentials",
+            "value": "0x0100000000000000000000007e2a2fa2a064f693f0a55c5639476d913ff12d05"
+          },
+          {
+            "label": "Amount to deposit",
+            "value": "1 ETH"
+          }
+        ],
+        "owner": "Ethereum Foundation"
+      }
+    },
+    {
+      "description": "Render zero ETH on Ethereum mainnet",
+      "status": "pass",
+      "rendered": {
+        "intent": "Stake ETH",
+        "fields": [
+          {
+            "label": "Validator public key",
+            "value": "0xa80c17e64f6172e5ab7bb1399d260b3684b0e70f99646f3fa7b4ef13a81963b245584b364f12ca3c465e20a23f548cdf"
+          },
+          {
+            "label": "Withdraw credentials",
+            "value": "0x0100000000000000000000007e2a2fa2a064f693f0a55c5639476d913ff12d05"
+          },
+          {
+            "label": "Amount to deposit",
+            "value": "0 ETH"
+          }
+        ],
+        "owner": "Ethereum Foundation"
+      }
+    },
+    {
+      "description": "Render the uint64-gwei maximum on Ethereum mainnet",
+      "status": "pass",
+      "rendered": {
+        "intent": "Stake ETH",
+        "fields": [
+          {
+            "label": "Validator public key",
+            "value": "0xa80c17e64f6172e5ab7bb1399d260b3684b0e70f99646f3fa7b4ef13a81963b245584b364f12ca3c465e20a23f548cdf"
+          },
+          {
+            "label": "Withdraw credentials",
+            "value": "0x0100000000000000000000007e2a2fa2a064f693f0a55c5639476d913ff12d05"
+          },
+          {
+            "label": "Amount to deposit",
+            "value": "18446744073.709551615 ETH"
+          }
+        ],
+        "owner": "Ethereum Foundation"
+      }
+    }
+  ]
+}

@@ -1,0 +1,68 @@
+{
+  "$schema": "../../../../schemas/deployments-v1.schema.json",
+  "formatVersion": "1.0.0",
+  "descriptorHash": "0x9d842276d3d7ae727cae4e5596599553c47dab7ed59d5704790bcfb5970bd20f",
+  "capturedAt": "2026-08-29T03:00:12Z",
+  "deployments": [
+    {
+      "id": "eip155:1:0x00000000219ab540356cBB839Cbe05303d7705Fa",
+      "preFilter": "pass-direct",
+      "observedAtBlock": 25858078,
+      "observedAtBlockHash": "0x9e15b3e451d22be5703ab27252f1a6f5524daff2961eeae0126d2ea5447f506c",
+      "runtimeCodeHash": "0x6c029a231254fadb724d63be769f75eedd66362df034a3e663252b49d062a666",
+      "sourceVerification": {
+        "sourcify": {
+          "status": "verified",
+          "url": "https://sourcify.dev/server/v2/contract/1/0x00000000219ab540356cBB839Cbe05303d7705Fa?fields=all",
+          "evidence": "Sourcify match 2115 identifies deposit_contract.sol:DepositContract compiled with Solidity 0.6.11+commit.5ef660b1. Creation and runtime bytecode are exact matches. The runtime bytecode returned by eth_getCode at block 25858078 is 6,358 bytes and hashes to the recorded value."
+        }
+      },
+      "proxy": {
+        "type": "none",
+        "upgradeability": "not-proxy",
+        "evidence": "Sourcify reports isProxy=false. The verified runtime implements deposit(bytes,bytes,bytes,bytes32) directly and has no delegatecall-based dispatch path or administrator."
+      },
+      "stateRefs": [],
+      "displayBindings": [
+        {
+          "formats": [
+            "deposit(bytes pubkey, bytes withdrawal_credentials, bytes signature, bytes32 deposit_data_root)"
+          ],
+          "result": "not-required",
+          "rationale": "The immutable, non-proxy deposit implementation reads msg.value and its four calldata arguments. It also reads and updates the deposit Merkle tree and deposit count, but those values are not administrator controlled and cannot change the fields shown for this call. This binding result addresses upgradeable code and mutable EVM state only; it does not resolve F-001's calldata- and consensus-state-dependent validator-registration branch."
+        }
+      ],
+      "notes": "Observation block timestamp: 2026-08-29T03:00:11Z. Deployment transaction: 0xe75fb554e433e03763a1560646ee22dcb74e5274b34c5ad644e7c0f619a7e1d0 at block 11052984."
+    },
+    {
+      "id": "eip155:560048:0x00000000219ab540356cBB839Cbe05303d7705Fa",
+      "preFilter": "pass-direct",
+      "observedAtBlock": 3514355,
+      "observedAtBlockHash": "0xc90ac66f00a0c4b51a60297d6551c101742c4de08c8854695f7e903199e7924c",
+      "runtimeCodeHash": "0x6c029a231254fadb724d63be769f75eedd66362df034a3e663252b49d062a666",
+      "sourceVerification": {
+        "sourcify": {
+          "status": "verified",
+          "url": "https://sourcify.dev/server/v2/contract/560048/0x00000000219ab540356cBB839Cbe05303d7705Fa?fields=all",
+          "evidence": "Sourcify match 46828910 identifies DepositContract.sol:DepositContract compiled with Solidity 0.6.11+commit.5ef660b1 and records a runtime match. The runtime bytecode returned by eth_getCode at block 3514355 is 6,358 bytes, is byte-identical to the reviewed mainnet runtime, and hashes to the recorded value."
+        }
+      },
+      "proxy": {
+        "type": "none",
+        "upgradeability": "not-proxy",
+        "evidence": "Sourcify reports isProxy=false. The verified runtime implements deposit(bytes,bytes,bytes,bytes32) directly and has no delegatecall-based dispatch path or administrator."
+      },
+      "stateRefs": [],
+      "displayBindings": [
+        {
+          "formats": [
+            "deposit(bytes pubkey, bytes withdrawal_credentials, bytes signature, bytes32 deposit_data_root)"
+          ],
+          "result": "not-required",
+          "rationale": "The immutable, non-proxy deposit implementation reads msg.value and its four calldata arguments. It also reads and updates the deposit Merkle tree and deposit count, but those values are not administrator controlled and cannot change the fields shown for this call. This binding result addresses upgradeable code and mutable EVM state only; it does not resolve F-001's calldata- and consensus-state-dependent validator-registration branch."
+        }
+      ],
+      "notes": "Observation block timestamp: 2026-08-29T03:00:12Z. Hoodi initializes the deposit contract as a predeployment, so Sourcify records no creation transaction."
+    }
+  ]
+}
