@@ -1,6 +1,6 @@
 {
   "formatVersion": "1.0.0",
-  "latestRecordAt": "2026-08-30T19:01:47Z",
+  "latestRecordAt": "2026-08-31T23:33:14Z",
   "entries": {
     "0x20de898a28022b1678a43f6c2ee75d3dd700ddfbd48f7770897c05472871dae7": [
       {
@@ -28,7 +28,7 @@
         "project": "consensus-specs",
         "descriptor": "calldata-DepositContract",
         "dossier": "audits/consensus-specs/calldata-DepositContract/0x9d842276d3d7ae727cae4e5596599553c47dab7ed59d5704790bcfb5970bd20f",
-        "reviewedAt": "2026-08-30T19:01:47Z",
+        "reviewedAt": "2026-08-31T23:33:14Z",
         "deployments": [
           "eip155:1:0x00000000219ab540356cBB839Cbe05303d7705Fa",
           "eip155:560048:0x00000000219ab540356cBB839Cbe05303d7705Fa"
