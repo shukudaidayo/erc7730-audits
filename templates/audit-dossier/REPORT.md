@@ -5,7 +5,8 @@
 Status: **draft**
 
 Summarize the conclusion in one paragraph. State what the approval means and
-call out any important coverage limitation.
+call out any important coverage limitation. Keep supporting checks that passed
+in their applicable sections rather than repeating them here.
 
 ## Descriptor Identity
 
@@ -41,6 +42,18 @@ whether that entity created, maintains, governs, or officially operates the
 target, or is its intended counterparty or beneficiary. If it instead names a
 protocol or project, explain why that is the established identity. A URL
 declared by the descriptor is a claim to verify, not evidence by itself.
+
+Treat `owner` as a displayed identity, not necessarily an onchain owner or
+administrator. If the evidence supports development provenance but not current
+control, operation, a counterparty relationship, or a beneficiary relationship,
+state that distinction.
+
+Mention an external audit, review, or formal verification only when it provides
+material evidence for the descriptor review. Identify the reviewer, reviewed
+source or bytecode, version, scope, and specific claim it supports. Do not treat
+it as general assurance or as a substitute for reviewing verified source and
+authoritative specifications. Keep deployed-source provenance separate from
+security-review evidence.
 
 Record authoritative support for every other metadata value that affects a
 display or binding condition, including deployment date, token metadata,
@@ -85,9 +98,11 @@ and display formats.
 
 - Selector or type identity, ABI, and source comparison:
 - Reachable execution paths and displayed intent:
+- Downstream or post-EVM processing and outcome claims:
 - Intent variants, interpolation, labels, grouping, and array behavior:
 - Definitions, references, maps, overrides, and conditional visibility:
 - Fields, formatting, and external-data sources:
+- Tagged, packed, or otherwise structured byte fields:
 - Nested calldata, lookup fallbacks, and encrypted-field behavior:
 - Assets, approvals, transfers, recipients, spenders, and privileged actions:
 - Native-currency behavior and `@.value` handling:
@@ -156,6 +171,10 @@ array iteration, nested calldata, and encryption. Confirm that the rendered
 intent, owner, labels, field order, separators, and every displayed value match
 the expected result in the fixture. For a negative test, confirm that the
 observed failure matches the expected error.
+
+For each real transaction fixture, state whether it establishes rendering,
+successful EVM execution, downstream acceptance, or the final outcome. Do not
+use EVM success alone as evidence of an outcome completed by another system.
 
 ## Findings
 
