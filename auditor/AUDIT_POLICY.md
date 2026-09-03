@@ -47,10 +47,10 @@ An `approved` result states that, for the exact ERC-8176 descriptor hash:
   the behavior in verified source.
 - Each rendered transaction shows the information a user needs to understand
   what they are authorizing, and every displayed value is formatted correctly.
-- For each deployment, the report identifies any proxy or
-  administrator-controlled onchain state that can change the displayed meaning.
-  The auditor does not approve an affected format unless the descriptor can
-  enforce the necessary implementation, facet, and state constraints.
+- For each deployment, the report identifies any proxy or mutable onchain state,
+  including state held by an external contract, that can change the displayed
+  meaning. The auditor does not approve an affected format unless the descriptor
+  can enforce the necessary implementation, facet, and state constraints.
 - The recorded tests exercise every reviewed format and reproduce the documented
   intent, fields, and values using the recorded tool versions and test data.
 
@@ -100,8 +100,10 @@ from the descriptor must be listed as limitations.
 - Verify every other metadata value that can affect displayed content or a
   binding condition, including `info.deploymentDate`, token name, ticker, and
   decimals, and every referenced constant, enum, and map entry. Record an
-  authoritative source for each value. For a map, verify the key path and the
-  behavior for both resolved and unresolved keys.
+  authoritative source for each value. For a map, verify the key path, resolved
+  key type, key derivation, normalization, matching rules, and uniqueness after
+  normalization under the descriptor's declared specification. Confirm the
+  behavior for both matching and nonmatching keys.
 - Confirm the descriptor submitter has a clear connection to the project, or
   record that the descriptor is community supplied.
 - Identify known relevant deployments documented by the project, a chain
@@ -229,10 +231,11 @@ For every entry in `display.formats`:
   transfer, recipient, spender, or privileged action. Show the affected asset,
   amount, authorization scope, account, or role when applicable.
 - For every reviewed calldata function, determine whether native currency can
-  accompany the call and how `msg.value` is used. If a nonzero value can be
-  transferred or can change the function's behavior, confirm that the rendered
-  output displays `@.value` with the correct native asset and amount. Test
-  zero-value and nonzero-value cases when relevant.
+  accompany the call and how `msg.value` is used, even when the descriptor does
+  not reference `@.value`. If a nonzero value can be transferred or can change
+  the function's behavior, confirm that the rendered output displays `@.value`
+  with the correct native asset and amount. Test zero-value and nonzero-value
+  cases when relevant.
 - Confirm that the complete user-facing description is accurate by rendering
   representative transactions, not only by inspecting the descriptor JSON.
 
@@ -247,12 +250,12 @@ For the descriptor as a whole:
   diamond, or `delegatecall` router. At a specific block and block hash, record
   the implementation that executes each reviewed function. For an EIP-2535
   diamond, record the facet mapped to each reviewed selector.
-- Identify administrator-controlled onchain state that the reviewed functions
-  read, directly or indirectly, and determine whether changing it can alter the
-  displayed intent or fields. For each value that can, record the contract
-  address, storage slot, raw value, applicable mask, purpose, and affected
-  formats at the observation block. If no such value exists, record that
-  conclusion in the display-binding rationale.
+- Identify each mutable onchain value that the reviewed functions read, directly
+  or indirectly, and that can alter the displayed intent or fields. Include
+  values held by external contracts, regardless of who or what can change them.
+  For each value, record the contract address, storage slot, raw value,
+  applicable mask, purpose, and affected formats at the observation block. If no
+  such value exists, record that conclusion in the display-binding rationale.
 - Confirm that the descriptor can enforce the implementation, facet, and state
   constraints needed to keep the display accurate. Evaluate only constraints
   available under the descriptor's declared schema version, not fields from a

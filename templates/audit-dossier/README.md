@@ -26,16 +26,18 @@ The generator creates a `draft`. Before publishing:
   record source verification and runtime bytecode hashes for every implementation
   that executes a reviewed format. For an EIP-2535 diamond, also record the
   selectors mapped to each facet.
-- Record every administrator-controlled state value that can change a reviewed
-  display, including its contract, slot, raw value, applicable mask, purpose,
-  affected formats, and evidence. If none exists, say so in the display-binding
-  rationale.
+- Record every mutable onchain state value that can change a reviewed display,
+  including values held by external contracts, regardless of who or what can
+  change them. Record each value's contract, slot, raw value, applicable mask,
+  purpose, affected formats, and evidence. If none exists, say so in the
+  display-binding rationale.
 - Add findings and limitations, even when the arrays remain empty.
 - Replace the example tests with the exact fixture used during review. Include
   only cases expected to render, mark each test as `typical` or `boundary`,
   provide at least one typical test per reviewed format, and record the
-  rationale for the selected boundary cases in `audit.json`. Keep the generated
-  `tests-v2.schema.json` reference unchanged.
+  rationale for the selected boundary cases in `audit.json`. Test relevant
+  zero-value and nonzero-value cases even when the descriptor does not reference
+  `@.value`. Keep the generated `tests-v2.schema.json` reference unchanged.
 - Record every direct and transitive included dependency, its source commit, its
   content hash, and either a local snapshot or an immutable repository and path.
   Save and hash a resolved descriptor when the descriptor uses `includes`.
