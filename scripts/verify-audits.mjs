@@ -66,7 +66,8 @@ function compileSchema(filename) {
 const validateAudit = compileSchema("audit-result-v1.schema.json");
 const validateDeployments = compileSchema("deployments-v1.schema.json");
 const validateDependencies = compileSchema("dependencies-v1.schema.json");
-const validateTests = compileSchema("tests-v1.schema.json");
+const validateTestsV1 = compileSchema("tests-v1.schema.json");
+const validateTestsV2 = compileSchema("tests-v2.schema.json");
 const validateTestResults = compileSchema("test-results-v1.schema.json");
 const validateChainInfo = compileSchema("chain-info-v1.schema.json");
 const validateAuditEvent = compileSchema("audit-event-v1.schema.json");
@@ -74,7 +75,8 @@ if (
   !validateAudit
   || !validateDeployments
   || !validateDependencies
-  || !validateTests
+  || !validateTestsV1
+  || !validateTestsV2
   || !validateTestResults
   || !validateChainInfo
   || !validateAuditEvent
@@ -106,6 +108,26 @@ function resolveInsideRepository(directory, reference, sourcePath) {
     return null;
   }
   return path;
+}
+
+const testSchemaValidators = new Map([
+  [join(root, "schemas", "tests-v1.schema.json"), validateTestsV1],
+  [join(root, "schemas", "tests-v2.schema.json"), validateTestsV2],
+]);
+
+function testSchemaValidator(tests, testsPath) {
+  if (typeof tests?.$schema !== "string") {
+    fail(testsPath, "tests must identify their versioned schema with $schema");
+    return null;
+  }
+  const schemaPath = resolveInsideRepository(dirname(testsPath), tests.$schema, testsPath);
+  if (!schemaPath) return null;
+  const validate = testSchemaValidators.get(schemaPath);
+  if (!validate) {
+    fail(testsPath, `unsupported tests schema: ${tests.$schema}`);
+    return null;
+  }
+  return validate;
 }
 
 function calculateDescriptorHash(descriptorPath, auditPath) {
@@ -539,7 +561,7 @@ function verifyTestCoverage(tests, audit, descriptor, testsPath, requireApproval
       }
       if (
         requireApprovalCoverage
-        && !matching.some(({ test }) => test.caseType === "typical" && test.expected)
+        && !matching.some(({ test }) => test.caseType === "typical")
       ) {
         fail(testsPath, `no typical successful test covers ${format.signature}`);
       }
@@ -560,7 +582,7 @@ function verifyTestCoverage(tests, audit, descriptor, testsPath, requireApproval
         fail(testsPath, `no EIP-712 test covers ${format.signature}`);
       } else if (
         requireApprovalCoverage
-        && !matching.some((test) => test.caseType === "typical" && test.expected)
+        && !matching.some((test) => test.caseType === "typical")
       ) {
         fail(testsPath, `no typical successful EIP-712 test covers ${format.signature}`);
       }
@@ -1087,7 +1109,8 @@ for (const auditPath of auditFiles) {
   }
 
   if (tests && (audit.testing.result !== "not-run" || reviewComplete)) {
-    if (validateWith(validateTests, tests, testsPath)) {
+    const validateTests = testSchemaValidator(tests, testsPath);
+    if (validateTests && validateWith(validateTests, tests, testsPath)) {
       const declaredTestTarget = resolveInside(dossier, tests.descriptor, testsPath);
       if (declaredTestTarget && effectiveDescriptorPath && declaredTestTarget !== effectiveDescriptorPath) {
         fail(testsPath, "tests must target the exact descriptor snapshot used for review");

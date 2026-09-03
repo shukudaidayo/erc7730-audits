@@ -1,5 +1,5 @@
 {
-  "$schema": "../../../../schemas/tests-v1.schema.json",
+  "$schema": "../../../../schemas/tests-v2.schema.json",
   "descriptor": "./descriptor.json",
   "dataProvider": {
     "tokens": {},

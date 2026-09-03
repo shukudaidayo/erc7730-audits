@@ -39,6 +39,9 @@ provenance, not substitutes for the descriptor hash.
 - `descriptor.json` is the exact descriptor snapshot that was reviewed.
 - `erc7730-schema.json` is the exact declared schema used to validate it.
 - `tests.json` is the exact, schema-validated fixture used for rendering checks.
+  Its `$schema` identifies the immutable fixture-schema version; new dossiers
+  use `tests-v2.schema.json`, while existing dossiers retain their original
+  version.
 - `test-results.json` preserves the Sourcify runner's unmodified output.
 - `test-chain-info.json` preserves only the chain name and native-currency
   values resolved for the tested cases; `audit.json` records their source,
@@ -130,20 +133,23 @@ step: the verifier recomputes the hashes when you validate the dossier.
    submitter, deployer address, repository namespace, or a URL declared by the
    descriptor as sufficient evidence for `owner`. Keep the displayed identity
    distinct from literal onchain ownership or administration, and state when
-   the evidence supports development provenance without current control. Only
-   mention an external audit or formal verification when it supports a material
-   descriptor-review claim, and identify the reviewer, reviewed source or
-   bytecode, version, scope, and specific claim. Do not use it as general
-   assurance or a substitute for reviewing verified source and authoritative
-   specifications. Then classify each declared deployment before starting the
-   function-level review
+   the evidence supports development provenance without current control. When
+   no single source documents an exact relationship, record the independent
+   facts and explain why they establish it in combination. An omission from
+   project documentation is contradictory only when the documentation claims
+   completeness or otherwise excludes the deployment. Only mention an external
+   audit or formal verification when it supports a material descriptor-review
+   claim, and identify the reviewer, reviewed source or bytecode, version,
+   scope, and specific claim. Do not use it as general assurance or a substitute
+   for reviewing verified source and authoritative specifications. Then
+   classify each declared deployment before starting the function-level review
    as `pass-direct`, `pass-bindable-proxy`, `fail-source-verification`, or
    `fail-descriptor-binding`. Complete the generated evidence and report only
    after the descriptor passes this pre-filter. The
    dossier remains a `draft` while work is incomplete. All deployments declared
    by the descriptor must be reviewed. For every reviewed format, record a
-   `boundaryRationale`, and mark each fixture as `typical`, `boundary`, or
-   `negative`. For each format, review any authoritative downstream processing
+   `boundaryRationale`, and mark each fixture as `typical` or `boundary`. For
+   each format, review any authoritative downstream processing
    on which the displayed outcome depends, and distinguish the signed
    submission, EVM success, downstream acceptance, and final outcome. Inspect
    tagged or packed byte values for material subfields instead of assuming that
@@ -161,7 +167,10 @@ node scripts/run-audit-tests.mjs 'audits/<project>/<descriptor>/<descriptor-hash
    For a cross-chain format, add any lookup chain IDs that are not present in a
    transaction or EIP-712 domain to `additionalChainInfoChainIds` in
    `tests.json`. Inspect the complete rendered output before concluding the
-   review.
+   review. Keep `tests.json` limited to cases expected to render. For an
+   applicable path expected to fail that the runner cannot express, record the
+   exact input, expected rejection and its basis, observed error, tool versions,
+   and exact reproduction method in `REPORT.md`.
 6. When every review requirement passes, set the status to
    `ready-for-attestation`, add `reviewedAt`, and make the report's conclusion
    complete. Run `npm run generate-indexes`, then `npm test` before signing, and

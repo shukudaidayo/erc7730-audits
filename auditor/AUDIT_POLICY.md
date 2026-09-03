@@ -79,13 +79,18 @@ from the descriptor must be listed as limitations.
   officially operates that target, or is its intended counterparty or
   beneficiary. Do not infer this relationship solely from the descriptor
   submitter, deployer address, repository namespace, or a URL declared by the
-  descriptor. If no person or organization has that relationship, confirm that
-  `owner` names the established protocol or project, or that the field is
-  omitted. Treat `owner` as a displayed identity rather than an assertion that
-  the named entity is an onchain owner or administrator. When the evidence
-  establishes development provenance but not current control, operation, a
-  counterparty relationship, or a beneficiary relationship, state that
-  distinction explicitly. Record the evidence and rationale.
+  descriptor. When no single source documents the exact relationship, multiple
+  independent facts can establish it in combination. Record each fact and
+  explain why the combination is sufficient. Treat a deployment's absence from
+  project documentation as contradictory evidence only when the documentation
+  claims to be complete or otherwise excludes that deployment. If no person or
+  organization has that relationship, confirm that `owner` names the
+  established protocol or project, or that the field is omitted. Treat `owner`
+  as a displayed identity rather than an assertion that the named entity is an
+  onchain owner or administrator. When the evidence establishes development
+  provenance but not current control, operation, a counterparty relationship,
+  or a beneficiary relationship, state that distinction explicitly. Record the
+  evidence and rationale.
 - Mention an external security audit, review, or formal verification only when
   it provides material evidence for the descriptor review. Identify the
   reviewer, reviewed source or bytecode, version, scope, and specific claim it
@@ -275,11 +280,13 @@ For the descriptor as a whole:
   that cannot be derived from the transaction or EIP-712 domain. If the runner
   cannot exercise an applicable descriptor feature, record the limitation and
   the exact alternative test method.
-- Require at least one typical transaction test per included format, and add
-  relevant boundary cases, such as zero, maximum values, special addresses,
-  unlimited approvals, empty arrays, and malformed or unsupported paths. When
-  an intended outcome requires downstream processing, do not classify EVM
-  success alone as an end-to-end successful case.
+- Require at least one typical successful rendering test per included format,
+  and add relevant boundary cases, such as zero, maximum values, special
+  addresses, unlimited approvals, empty arrays, and malformed or unsupported
+  paths. Use the error-path method below instead of a rendering fixture when a
+  case is expected to fail. When an intended outcome requires downstream
+  processing, do not classify EVM success alone as an end-to-end successful
+  case.
 - Exercise every applicable output-changing branch of intent interpolation,
   visibility, reference and map resolution, external lookup, array iteration,
   nested calldata, and encryption. Record the expected successful, fallback,
@@ -292,8 +299,11 @@ For the descriptor as a whole:
 - Confirm that each successful test checks the complete relevant output by
   comparing the rendered intent, owner, labels, group structure, field order,
   separators, and every displayed value with the expected result recorded in
-  the fixture. For a negative test, compare the observed failure with the
-  expected error.
+  the fixture. For each applicable path expected to fail, confirm the failure
+  with the Sourcify runner when it can express the check. Otherwise, record the
+  exact input, expected rejection and its basis, observed error, tool versions,
+  and exact reproduction method. Do not treat an expected error as a successful
+  rendering test.
 
 ## Findings and Limitations
 

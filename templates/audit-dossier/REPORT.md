@@ -42,6 +42,10 @@ whether that entity created, maintains, governs, or officially operates the
 target, or is its intended counterparty or beneficiary. If it instead names a
 protocol or project, explain why that is the established identity. A URL
 declared by the descriptor is a claim to verify, not evidence by itself.
+When no single source documents the exact relationship, record each independent
+fact and explain why the combination is sufficient. Do not treat an omission
+from project documentation as contradictory unless the documentation claims to
+be complete or otherwise excludes the deployment.
 
 Treat `owner` as a displayed identity, not necessarily an onchain owner or
 administrator. If the evidence supports development provenance but not current
@@ -169,8 +173,11 @@ was not tested. Exercise every applicable success, fallback, and error branch
 for interpolation, visibility, reference and map resolution, external lookups,
 array iteration, nested calldata, and encryption. Confirm that the rendered
 intent, owner, labels, field order, separators, and every displayed value match
-the expected result in the fixture. For a negative test, confirm that the
-observed failure matches the expected error.
+the expected result in the fixture. For each applicable path expected to fail,
+state whether Sourcify reproduced the error. If the runner could not express the
+check, record the exact input, expected rejection and its basis, observed error,
+tool versions, and exact reproduction method. Do not describe an expected error
+as a successful rendering test.
 
 For each real transaction fixture, state whether it establishes rendering,
 successful EVM execution, downstream acceptance, or the final outcome. Do not

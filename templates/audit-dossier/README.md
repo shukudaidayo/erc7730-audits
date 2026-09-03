@@ -11,7 +11,8 @@ The generator creates a `draft`. Before publishing:
 - Keep the generated ERC-7730 schema snapshot and its hash unchanged.
 - Record the project URL and purpose, the submitter's relationship to the
   project, and the authoritative sources used to identify known relevant
-  deployments.
+  deployments. If multiple independent facts establish an identity or
+  deployment relationship in combination, record each fact and the rationale.
 - Classify every declared deployment before the function-level review as
   `pass-direct`, `pass-bindable-proxy`, `fail-source-verification`, or
   `fail-descriptor-binding`.
@@ -30,10 +31,11 @@ The generator creates a `draft`. Before publishing:
   affected formats, and evidence. If none exists, say so in the display-binding
   rationale.
 - Add findings and limitations, even when the arrays remain empty.
-- Replace the example tests with the exact fixture used during review. Mark each
-  test as `typical`, `boundary`, or `negative`, provide at least one typical test
-  per reviewed format, and record the rationale for the selected boundary cases
-  in `audit.json`.
+- Replace the example tests with the exact fixture used during review. Include
+  only cases expected to render, mark each test as `typical` or `boundary`,
+  provide at least one typical test per reviewed format, and record the
+  rationale for the selected boundary cases in `audit.json`. Keep the generated
+  `tests-v2.schema.json` reference unchanged.
 - Record every direct and transitive included dependency, its source commit, its
   content hash, and either a local snapshot or an immutable repository and path.
   Save and hash a resolved descriptor when the descriptor uses `includes`.
@@ -42,6 +44,9 @@ The generator creates a `draft`. Before publishing:
   unmodified Sourcify result file and the compact, hashed chain-information
   snapshot that the wrapper records. Declare extra cross-chain lookups in
   `tests.json` when they cannot be derived from a transaction or EIP-712 domain.
+  For an applicable path expected to fail that Sourcify cannot express, record
+  the exact input, expected rejection and its basis, observed error, tool
+  versions, and exact reproduction method in `REPORT.md`.
 - When the review reaches a conclusion, replace `draft` with the correct final
   status and add `reviewedAt` to `audit.json`.
 - Use `ready-for-attestation` when every review requirement passes but the
