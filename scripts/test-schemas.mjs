@@ -41,7 +41,8 @@ const validateAudit = validator("audit-result-v1.schema.json");
 const validateAuditTools = validator("audit-tools-v1.schema.json");
 const validateDeployments = validator("deployments-v1.schema.json");
 const validateDependencies = validator("dependencies-v1.schema.json");
-const validateTests = validator("tests-v1.schema.json");
+const validateTestsV1 = validator("tests-v1.schema.json");
+const validateTestsV2 = validator("tests-v2.schema.json");
 const validateTestResults = validator("test-results-v1.schema.json");
 const validateChainInfo = validator("chain-info-v1.schema.json");
 const validateAuditEvent = validator("audit-event-v1.schema.json");
@@ -414,15 +415,16 @@ const renderingTests = {
     },
   ],
 };
-expectValid(validateTests, renderingTests, "rendering fixture");
+expectValid(validateTestsV1, renderingTests, "v1 rendering fixture");
+expectValid(validateTestsV2, renderingTests, "v2 rendering fixture");
 
 const crossChainRenderingTests = clone(renderingTests);
 crossChainRenderingTests.additionalChainInfoChainIds = [10, 42161];
-expectValid(validateTests, crossChainRenderingTests, "rendering fixture with extra chain lookups");
+expectValid(validateTestsV2, crossChainRenderingTests, "rendering fixture with extra chain lookups");
 
 const duplicateChainInfoIds = clone(crossChainRenderingTests);
 duplicateChainInfoIds.additionalChainInfoChainIds = [10, 10];
-expectInvalid(validateTests, duplicateChainInfoIds, "duplicate extra chain lookups");
+expectInvalid(validateTestsV2, duplicateChainInfoIds, "duplicate extra chain lookups");
 
 const chainInfo = {
   formatVersion: "1.0.0",
@@ -472,19 +474,16 @@ errorResults.cases[0] = {
 expectValid(validateTestResults, errorResults, "error rendering result");
 
 const negativeRenderingTest = clone(renderingTests);
-negativeRenderingTest.tests = [
-  {
-    description: "Unsupported path",
-    caseType: "negative",
-    rawTx: "0x01",
-    expectedError: "The formatter rejects the unsupported path.",
-  },
-];
-expectValid(validateTests, negativeRenderingTest, "negative rendering fixture");
+negativeRenderingTest.tests[0].caseType = "negative";
+delete negativeRenderingTest.tests[0].expected;
+negativeRenderingTest.tests[0].expectedError = "The formatter rejects the unsupported path.";
+expectValid(validateTestsV1, negativeRenderingTest, "v1 negative rendering fixture");
+expectInvalid(validateTestsV2, negativeRenderingTest, "v2 negative rendering fixture");
 
-const nonnegativeExpectedError = clone(negativeRenderingTest);
-nonnegativeExpectedError.tests[0].caseType = "boundary";
-expectInvalid(validateTests, nonnegativeExpectedError, "nonnegative test with expected error");
+const expectedErrorRenderingTest = clone(renderingTests);
+delete expectedErrorRenderingTest.tests[0].expected;
+expectedErrorRenderingTest.tests[0].expectedError = "The formatter rejects the unsupported path.";
+expectInvalid(validateTestsV2, expectedErrorRenderingTest, "v2 fixture with expected error");
 
 const eventBase = {
   formatVersion: "1.0.0",
@@ -620,6 +619,10 @@ try {
   assert.deepEqual(readFileSync(join(dossier, "erc7730-schema.json")), Buffer.from(schemaBytes));
   assert.deepEqual(readFileSync(join(dossier, "tests.json")),
     readFileSync(join(root, "templates/audit-dossier/tests.json")));
+  const generatedTests = JSON.parse(readFileSync(join(dossier, "tests.json"), "utf8"));
+  assert.equal(generatedTests.$schema, "../../../../schemas/tests-v2.schema.json");
+  generatedTests.tests = clone(renderingTests.tests);
+  expectValid(validateTestsV2, generatedTests, "generated v2 rendering fixture");
   const generated = JSON.parse(readFileSync(join(dossier, "audit.json"), "utf8"));
   expectValid(validateAudit, generated, "generated draft");
   assert.equal(generated.status, "draft");

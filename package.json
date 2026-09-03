@@ -9,7 +9,7 @@
   },
   "type": "module",
   "scripts": {
-    "test": "node scripts/test-schemas.mjs && node scripts/test-audit-events.mjs && node scripts/test-attestations.mjs && node scripts/verify-audits.mjs",
+    "test": "node scripts/test-schemas.mjs && node scripts/test-audit-events.mjs && node scripts/test-attestations.mjs && node scripts/verify-audits.mjs && node scripts/generate-indexes.mjs --check",
     "new-audit": "node scripts/new-audit.mjs",
     "audit-tests": "node scripts/run-audit-tests.mjs",
     "verify": "node scripts/verify-audits.mjs",

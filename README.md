@@ -39,6 +39,9 @@ provenance, not substitutes for the descriptor hash.
 - `descriptor.json` is the exact descriptor snapshot that was reviewed.
 - `erc7730-schema.json` is the exact declared schema used to validate it.
 - `tests.json` is the exact, schema-validated fixture used for rendering checks.
+  Its `$schema` identifies the immutable fixture-schema version; new dossiers
+  use `tests-v2.schema.json`, while existing dossiers retain their original
+  version.
 - `test-results.json` preserves the Sourcify runner's unmodified output.
 - `test-chain-info.json` preserves only the chain name and native-currency
   values resolved for the tested cases; `audit.json` records their source,
@@ -128,15 +131,29 @@ step: the verifier recomputes the hashes when you validate the dossier.
 4. Confirm every user-visible identity in the descriptor's `metadata`, and
    record authoritative support in the report. In particular, do not treat the
    submitter, deployer address, repository namespace, or a URL declared by the
-   descriptor as sufficient evidence for `owner`. Then classify each declared
-   deployment before starting the function-level review
+   descriptor as sufficient evidence for `owner`. Keep the displayed identity
+   distinct from literal onchain ownership or administration, and state when
+   the evidence supports development provenance without current control. When
+   no single source documents an exact relationship, record the independent
+   facts and explain why they establish it in combination. An omission from
+   project documentation is contradictory only when the documentation claims
+   completeness or otherwise excludes the deployment. Only mention an external
+   audit or formal verification when it supports a material descriptor-review
+   claim, and identify the reviewer, reviewed source or bytecode, version,
+   scope, and specific claim. Do not use it as general assurance or a substitute
+   for reviewing verified source and authoritative specifications. Then
+   classify each declared deployment before starting the function-level review
    as `pass-direct`, `pass-bindable-proxy`, `fail-source-verification`, or
    `fail-descriptor-binding`. Complete the generated evidence and report only
    after the descriptor passes this pre-filter. The
    dossier remains a `draft` while work is incomplete. All deployments declared
    by the descriptor must be reviewed. For every reviewed format, record a
-   `boundaryRationale`, and mark each fixture as `typical`, `boundary`, or
-   `negative`.
+   `boundaryRationale`, and mark each fixture as `typical` or `boundary`. For
+   each format, review any authoritative downstream processing
+   on which the displayed outcome depends, and distinguish the signed
+   submission, EVM success, downstream acceptance, and final outcome. Inspect
+   tagged or packed byte values for material subfields instead of assuming that
+   an undivided raw-byte display is sufficient.
 5. Run the fixture with the repository's pinned Sourcify test runner:
 
 ```bash
@@ -150,12 +167,19 @@ node scripts/run-audit-tests.mjs 'audits/<project>/<descriptor>/<descriptor-hash
    For a cross-chain format, add any lookup chain IDs that are not present in a
    transaction or EIP-712 domain to `additionalChainInfoChainIds` in
    `tests.json`. Inspect the complete rendered output before concluding the
-   review.
+   review. Keep `tests.json` limited to cases expected to render. For an
+   applicable path expected to fail that the runner cannot express, record the
+   exact input, expected rejection and its basis, observed error, tool versions,
+   and exact reproduction method in `REPORT.md`.
 6. When every review requirement passes, set the status to
    `ready-for-attestation`, add `reviewedAt`, and make the report's conclusion
-   complete. Run `npm test` before signing, then follow
-   [Create an Attestation](#create-an-attestation). If the review does not pass,
-   record the appropriate status and findings without issuing an attestation.
+   complete. Run `npm run generate-indexes`, then `npm test` before signing, and
+   follow [Create an Attestation](#create-an-attestation). If the review does
+   not pass, record the appropriate status and findings without issuing an
+   attestation.
+   Before merging a completed dossier, refresh `reviewedAt` after any material
+   change to its evidence, findings, limitations, or conclusion. Regenerate the
+   indexes after the final timestamp is set.
 
 ## Create an Attestation
 
@@ -216,13 +240,14 @@ validation failure. Non-approved dossiers must not have an `attestation` object.
 Before committing or publishing a completed record, run:
 
 ```bash
-npm test
 npm run generate-indexes
+npm test
 ```
 
-`npm test` includes `npm run verify`, so there is no need to run both. Use
-`npm run verify` on its own for an audit-only check during a review. CI runs
-`npm test` and `npm run check-indexes` to check the committed records and indexes.
+`npm test` includes both `npm run verify` and the generated-index freshness
+check, so there is no need to run either separately. Use `npm run verify` on its
+own for an audit-only check during a review. CI runs the same `npm test` command
+against the committed records and indexes.
 
 The tests exercise the schemas, dossier generation, shared input rules,
 lifecycle events, attestation and report validation, and complete audit verifier.
@@ -231,7 +256,21 @@ output, the external-data hash, and the recorded result. It does not execute the
 renderer command from `audit.json`; rerun that exact command when fresh rendering
 evidence is required.
 
-## Publishing upstream
+## Publishing Negative Findings Upstream
+
+After a `needs-changes` or `rejected` dossier is merged, open an issue through
+the upstream project's appropriate public tracker. Summarize the inaccurate
+display and its impact, identify practical current-schema fixes separately from
+possible future extensions, and link the immutable audit report for complete
+evidence. Keep working drafts outside this repository unless they are intended
+to become permanent audit artifacts. Use the project's private security channel
+instead when public disclosure would create a material risk.
+
+Do not modify an immutable dossier solely to add the issue URL. The issue links
+to the audit, and its own discussion tracks remediation. Do not issue a positive
+attestation while the blocking findings remain unresolved.
+
+## Publishing Approved Attestations Upstream
 
 Keeping an attestation here does not make it discoverable to wallets that only
 consume the canonical registry. Copy the raw attestation into a registry pull
@@ -243,6 +282,13 @@ registry/<project>/sigs/<descriptor-slug>.eip155-1-0xYourAddress.json
 
 The dossier already uses this filename, so copy the export without renaming or
 modifying it.
+
+Before opening the pull request, compute the hash of the descriptor currently
+in the canonical registry and confirm that it still equals the attested hash.
+If it differs, do not publish the old attestation; create a new dossier and
+review the changed descriptor. Validate the copied export again, and include
+the descriptor hash, attestation UID, and immutable audit-report URL in the pull
+request description.
 
 Also submit `auditor/profile.json` to the registry as:
 
