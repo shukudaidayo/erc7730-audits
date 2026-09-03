@@ -172,8 +172,12 @@ For every entry in `display.formats`:
   consensus-layer acceptance. Review the authoritative specification or
   implementation for that processing, and keep the signed submission,
   successful EVM execution when applicable, downstream acceptance, and final
-  outcome distinct. Do not approve a display that presents a conditional
-  outcome as established. Do not require the descriptor to validate every
+  outcome distinct. An intent can name the expected protocol operation, such as
+  `Bridge ETH`, when the signed data unambiguously initiates the operation
+  described; this does not by itself assert or guarantee downstream completion.
+  Use outcome-neutral language when the proposed wording would otherwise
+  present a conditional downstream outcome as established or misrepresent a
+  materially different path. Do not require the descriptor to validate every
   downstream precondition when outcome-neutral language and the displayed
   fields accurately describe the complete authorization.
 - Confirm that every user-visible text and layout directive is accurate and
