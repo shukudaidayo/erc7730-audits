@@ -102,7 +102,7 @@ and display formats.
 
 - Selector or type identity, ABI, and source comparison:
 - Reachable execution paths and displayed intent:
-- Downstream or post-EVM processing and outcome claims:
+- Outcome dependencies and downstream processing:
 - Intent variants, interpolation, labels, grouping, and array behavior:
 - Definitions, references, maps, overrides, and conditional visibility:
 - Fields, formatting, and external-data sources:

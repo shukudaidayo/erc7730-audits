@@ -165,13 +165,14 @@ For every entry in `display.formats`:
   `display.formats`.
 - Trace each function path that can change the displayed intent or fields, and
   confirm that the intent text is accurate for every reachable in-scope path.
-- Determine whether the displayed intent or fields claim an outcome completed
-  only through processing after the EVM call or outside the primary execution
-  system, such as consensus processing, bridge or rollup delivery, an offchain
-  service, or application-specific signature or proof validation. Review the
-  authoritative specification or implementation for that processing, and keep
-  the signed submission, successful EVM execution, downstream acceptance, and
-  final outcome distinct. Do not approve a display that presents a conditional
+- Determine whether the displayed intent or fields claim an outcome that the
+  signed transaction or message does not establish by itself. Examples include
+  bridge or cross-chain delivery, offchain service execution,
+  application-specific signature or proof validation, rollup settlement, and
+  consensus-layer acceptance. Review the authoritative specification or
+  implementation for that processing, and keep the signed submission,
+  successful EVM execution when applicable, downstream acceptance, and final
+  outcome distinct. Do not approve a display that presents a conditional
   outcome as established. Do not require the descriptor to validate every
   downstream precondition when outcome-neutral language and the displayed
   fields accurately describe the complete authorization.
