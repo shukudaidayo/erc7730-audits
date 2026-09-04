@@ -1,0 +1,7 @@
+{
+  "$schema": "../../../../schemas/deployments-v1.schema.json",
+  "formatVersion": "1.0.0",
+  "descriptorHash": "0x2da3bd4d7f5839af54d469878d66d6a70a9d1f81f35799db4108a847cac89e05",
+  "capturedAt": null,
+  "deployments": []
+}

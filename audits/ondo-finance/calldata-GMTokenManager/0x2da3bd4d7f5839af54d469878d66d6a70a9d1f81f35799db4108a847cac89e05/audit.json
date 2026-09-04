@@ -1,0 +1,54 @@
+{
+  "$schema": "../../../../schemas/audit-result-v1.schema.json",
+  "formatVersion": "1.0.0",
+  "policyVersion": "1.2.0",
+  "status": "draft",
+  "auditor": {
+    "id": "eip155:1:0x9a659894e5D115846767dB0e1685744c452E7a6e",
+    "profile": "../../../../auditor/profile.json"
+  },
+  "descriptor": {
+    "source": {
+      "repository": "https://github.com/ethereum/clear-signing-erc7730-registry",
+      "commit": "175e8cfed3f13677615aca8ac1241c96ec4f87d1",
+      "path": "registry/ondo-finance/calldata-GMTokenManager.json"
+    },
+    "erc7730Version": "2.0.0",
+    "schema": {
+      "declaredReference": "../../specs/erc7730-v2.schema.json",
+      "snapshot": "erc7730-schema.json",
+      "hash": {
+        "standard": "ERC-8176",
+        "algorithm": "keccak256-rfc8785-jcs",
+        "value": "0x690cb47b8d4b847dbc9a9e29da75cb05d436b132900d57508ca12173f1f800b3"
+      }
+    },
+    "hash": {
+      "standard": "ERC-8176",
+      "algorithm": "keccak256-rfc8785-jcs",
+      "value": "0x2da3bd4d7f5839af54d469878d66d6a70a9d1f81f35799db4108a847cac89e05"
+    },
+    "snapshot": "descriptor.json"
+  },
+  "scope": {
+    "deployments": [],
+    "formatsReviewed": []
+  },
+  "findings": [],
+  "limitations": [],
+  "testing": {
+    "fixture": "tests.json",
+    "result": "not-run",
+    "tool": "@ethereum-sourcify/clear-signing-test-runner",
+    "toolVersion": "@ethereum-sourcify/clear-signing-test-runner@0.1.0",
+    "toolCommit": "dae3cdabd0eab26173d7f7a31a2ca7e75bf07daf",
+    "command": "node scripts/run-audit-tests.mjs 'audits/ondo-finance/calldata-GMTokenManager/0x2da3bd4d7f5839af54d469878d66d6a70a9d1f81f35799db4108a847cac89e05'"
+  },
+  "evidence": {
+    "deployments": "deployments.json",
+    "dependencies": "dependencies.json",
+    "report": "REPORT.md"
+  },
+  "createdAt": "2026-09-04T01:41:24Z",
+  "notes": "DRAFT: complete the review before recording a final status."
+}
