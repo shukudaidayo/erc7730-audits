@@ -1,0 +1,124 @@
+{
+  "$schema": "../../../../schemas/audit-result-v1.schema.json",
+  "formatVersion": "1.0.0",
+  "policyVersion": "1.2.0",
+  "status": "draft",
+  "auditor": {
+    "id": "eip155:1:0x9a659894e5D115846767dB0e1685744c452E7a6e",
+    "profile": "../../../../auditor/profile.json"
+  },
+  "descriptor": {
+    "source": {
+      "repository": "https://github.com/ethereum/clear-signing-erc7730-registry",
+      "commit": "48d3eb8f1e35da816f522bd6c323c9dde5731a26",
+      "path": "registry/figment/calldata-figment-batch-deposit.json"
+    },
+    "erc7730Version": "2.0.0",
+    "schema": {
+      "declaredReference": "../../specs/erc7730-v2.schema.json",
+      "snapshot": "erc7730-schema.json",
+      "hash": {
+        "standard": "ERC-8176",
+        "algorithm": "keccak256-rfc8785-jcs",
+        "value": "0x690cb47b8d4b847dbc9a9e29da75cb05d436b132900d57508ca12173f1f800b3"
+      }
+    },
+    "hash": {
+      "standard": "ERC-8176",
+      "algorithm": "keccak256-rfc8785-jcs",
+      "value": "0x295364417a359852bb60a3a106bfaebfe681b827da86f0e0c43358451a2e78c6"
+    },
+    "snapshot": "descriptor.json"
+  },
+  "scope": {
+    "deployments": [
+      "eip155:1:0x8B0d88B8Be3C15D746Feb0B1f18c883c03B6Aa62",
+      "eip155:560048:0x7Ac74cb69104Cea773cc3154D47c930ca6462fe8"
+    ],
+    "formatsReviewed": [
+      {
+        "signature": "deposit(bytes[] pubkeys, bytes[] withdrawal_credentials, bytes[] signatures, bytes32[] deposit_data_roots, uint256[] amounts_gwei)",
+        "selector": "0xc09bb1db",
+        "result": "fail",
+        "boundaryRationale": "The fixtures cover both declared chains, a real existing-validator top-up, two-element array iteration, the 1 ETH and 2,048 ETH per-validator limits, zero and nonzero transaction values, and empty arrays. Verified source establishes the expected reverts for empty arrays, amount/value mismatch, unequal array lengths, invalid byte lengths, out-of-range amounts, and more than 500 entries.",
+        "notes": "The renderer reproduces the descriptor, but the output does not satisfy the policy because of F-001 through F-004."
+      }
+    ]
+  },
+  "findings": [
+    {
+      "id": "F-001",
+      "severity": "high",
+      "blocking": true,
+      "status": "open",
+      "title": "The display cannot distinguish validator-deposit outcomes",
+      "description": "The batch contract checks array shape, byte lengths, amount bounds, total msg.value, and each deposit-data root, but it does not verify BLS signatures or determine whether a validator public key already exists. Consensus processing ignores the submitted signature and withdrawal credentials for an existing validator, verifies the signature and applies the credentials for a new validator, and creates no validator when a new validator's signature is invalid. The descriptor always hides signatures and renders Stake ETH. A new-validator call with invalid proof data can therefore succeed on the execution layer and retain the ETH without creating or crediting a validator. ERC-7730 v2 cannot express the required BLS validation or existing-validator branch, so the format needs outcome-neutral submission language or future general function-level validation support.",
+      "affectedFormats": [
+        "deposit(bytes[] pubkeys, bytes[] withdrawal_credentials, bytes[] signatures, bytes32[] deposit_data_roots, uint256[] amounts_gwei)"
+      ]
+    },
+    {
+      "id": "F-002",
+      "severity": "medium",
+      "blocking": true,
+      "status": "open",
+      "title": "Withdrawal credentials are displayed as opaque and effective",
+      "description": "Withdrawal credentials are a tagged 32-byte value whose prefix selects BLS, execution-address, or compounding withdrawal behavior, and whose payload can carry a withdrawal address. The descriptor labels each complete raw value Withdraw Credentials without explaining its type or destination and without clarifying that it is only the submitted value. For an existing-validator top-up, consensus ignores it entirely. The real registry fixture proves this branch: it displays all-zero submitted credentials, while the validator's effective credentials are 0x02 credentials for 0x859eed38b9c59635bece6a3515b09981b963cf17. ERC-7730 v2 byte slices can expose the prefix, payload, and final 20 bytes, and the labels can identify them as submitted data.",
+      "affectedFormats": [
+        "deposit(bytes[] pubkeys, bytes[] withdrawal_credentials, bytes[] signatures, bytes32[] deposit_data_roots, uint256[] amounts_gwei)"
+      ]
+    },
+    {
+      "id": "F-003",
+      "severity": "medium",
+      "blocking": true,
+      "status": "open",
+      "title": "Parallel arrays are not grouped into validator deposits",
+      "description": "The contract associates public keys, withdrawal credentials, signatures, deposit-data roots, and amounts by array index. The descriptor renders every public key first, then every withdrawal-credentials value, and then every amount, while hiding signatures and roots. It supplies no group, separator, index, or bundled iteration. The display therefore forces the signer to correlate values by position across three separate, unindexed lists. This is error-prone for small batches and impractical for a function that permits up to 500 entries. ERC-7730 v2 group formatting and bundled array iteration can preserve the per-validator association.",
+      "affectedFormats": [
+        "deposit(bytes[] pubkeys, bytes[] withdrawal_credentials, bytes[] signatures, bytes32[] deposit_data_roots, uint256[] amounts_gwei)"
+      ]
+    },
+    {
+      "id": "F-004",
+      "severity": "low",
+      "blocking": true,
+      "status": "open",
+      "title": "The transaction's total native value is not displayed",
+      "description": "The payable function requires msg.value to equal the sum of all amounts_gwei values converted to wei, but the descriptor shows only the individual calldata amounts and never references @.value. The zero-value boundary fixture with 1 ETH declared in calldata renders the same 1ETH field as a correctly funded call and does not show the transaction's actual zero value. A mismatch reverts under the verified source, which limits the immediate impact, but the signed native value and the total for a potentially 500-entry batch remain undisclosed. Policy 1.2.0 requires the actual nonzero native value to be shown. This blocking classification is provisional pending ethereum/ERCs#1974, which proposes requiring wallets to display every nonzero native transaction value even when the descriptor does not reference @.value.",
+      "affectedFormats": [
+        "deposit(bytes[] pubkeys, bytes[] withdrawal_credentials, bytes[] signatures, bytes32[] deposit_data_roots, uint256[] amounts_gwei)"
+      ]
+    }
+  ],
+  "limitations": [],
+  "testing": {
+    "fixture": "tests.json",
+    "result": "pass",
+    "results": "test-results.json",
+    "tool": "@ethereum-sourcify/clear-signing-test-runner",
+    "toolVersion": "@ethereum-sourcify/clear-signing-test-runner@0.1.0 / @ethereum-sourcify/clear-signing@0.2.2",
+    "toolCommit": "dae3cdabd0eab26173d7f7a31a2ca7e75bf07daf",
+    "command": "node scripts/run-audit-tests.mjs audits/figment/calldata-figment-batch-deposit/0x295364417a359852bb60a3a106bfaebfe681b827da86f0e0c43358451a2e78c6",
+    "externalData": [
+      {
+        "name": "Resolved chain information used by rendering tests",
+        "format": "chain-info-v1",
+        "source": "https://chainid.network/chains_mini.json",
+        "snapshot": "test-chain-info.json",
+        "capturedAt": "2026-09-03T21:44:23Z",
+        "hash": {
+          "algorithm": "sha256",
+          "value": "0x870f088f3fea4df88d7ff562339994fc01e834b807f0ceeb4012c90c5410a829"
+        }
+      }
+    ]
+  },
+  "evidence": {
+    "deployments": "deployments.json",
+    "dependencies": "dependencies.json",
+    "report": "REPORT.md"
+  },
+  "createdAt": "2026-09-03T13:13:43Z",
+  "notes": "DRAFT: F-001 through F-003 currently support a negative result. Final classification of F-004 is waiting on ethereum/ERCs#1974 and any resulting Audit Policy 1.3.0 treatment of wallet-mandated native-value display."
+}

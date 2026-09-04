@@ -1,0 +1,68 @@
+{
+  "$schema": "../../../../schemas/deployments-v1.schema.json",
+  "formatVersion": "1.0.0",
+  "descriptorHash": "0x295364417a359852bb60a3a106bfaebfe681b827da86f0e0c43358451a2e78c6",
+  "capturedAt": "2026-09-03T13:21:12Z",
+  "deployments": [
+    {
+      "id": "eip155:1:0x8B0d88B8Be3C15D746Feb0B1f18c883c03B6Aa62",
+      "preFilter": "pass-direct",
+      "observedAtBlock": 25897043,
+      "observedAtBlockHash": "0x4c8bdcff1053cf2378f2e7233d9b05733ec89744ffb843afdaf4832384b2ca65",
+      "runtimeCodeHash": "0x869107bd90290bc5eb76e33f1ee9bc0e3aae652d1abdad367a5c182210b9f2be",
+      "sourceVerification": {
+        "sourcify": {
+          "status": "verified",
+          "url": "https://sourcify.dev/server/v2/contract/1/0x8B0d88B8Be3C15D746Feb0B1f18c883c03B6Aa62?fields=all",
+          "evidence": "Sourcify match 10934158 identifies contracts/FigmentEth2DepositorV1.sol:FigmentEth2DepositorV1 compiled with solc 0.8.28+commit.7893614a and records creation and runtime matches. The 2,506-byte runtime fetched again at block 25897043 hashes to the recorded value. The primary verified source has Keccak-256 0x1f4c21cc25452d31a351c1b6d8758dc114dad75a3ab15003bdea27295da96fe2 and is byte-identical to the source in Figment's repository at 53fa2d588e33dca6d8a625a169ce4f4290b34fb6."
+        }
+      },
+      "proxy": {
+        "type": "none",
+        "upgradeability": "not-proxy",
+        "evidence": "Sourcify reports isProxy=false. The verified FigmentEth2DepositorV1 runtime implements the reviewed selector directly, and the source contains no delegatecall-based routing or code-upgrade mechanism."
+      },
+      "stateRefs": [],
+      "displayBindings": [
+        {
+          "formats": [
+            "deposit(bytes[] pubkeys, bytes[] withdrawal_credentials, bytes[] signatures, bytes32[] deposit_data_roots, uint256[] amounts_gwei)"
+          ],
+          "result": "not-required",
+          "rationale": "The non-proxy implementation and its canonical deposit-contract target are immutable. deposit reads the mutable paused flag, but that flag can only make the call execute or revert; it cannot alter the operation or fields for an executing call. Ownership can change who toggles that flag but cannot change the target or deposit behavior. The downstream deposit tree and count can affect execution availability, not the displayed authorization. No mutable EVM state can change the displayed intent or fields, so no state reference is required. This result does not cure F-001's calldata- and consensus-state-dependent outcome."
+        }
+      ],
+      "notes": "Observation timestamp: 2026-09-03T13:21:11Z. At this block, owner() returned 0x5396E32D8122eA316C60FF7ebB85006C63F44af7, paused() returned false, and the immutable depositContract() returned 0x00000000219ab540356cBB839Cbe05303d7705Fa. Sourcify records deployment transaction 0x28641256da9320915084899cc5f74aceb9a55d596ef705fade514b8e522bc455 at block 23583309, transaction index 199, from the same owner address."
+    },
+    {
+      "id": "eip155:560048:0x7Ac74cb69104Cea773cc3154D47c930ca6462fe8",
+      "preFilter": "pass-direct",
+      "observedAtBlock": 3550399,
+      "observedAtBlockHash": "0xff15d53b59352d3700e69000dbf67b05596ad7bef7be71bf604321e17d472d90",
+      "runtimeCodeHash": "0x869107bd90290bc5eb76e33f1ee9bc0e3aae652d1abdad367a5c182210b9f2be",
+      "sourceVerification": {
+        "sourcify": {
+          "status": "verified",
+          "url": "https://sourcify.dev/server/v2/contract/560048/0x7Ac74cb69104Cea773cc3154D47c930ca6462fe8?fields=all",
+          "evidence": "Sourcify match 46828858 identifies contracts/FigmentEth2DepositorV1.sol:FigmentEth2DepositorV1 compiled with solc 0.8.28+commit.7893614a and records creation and runtime matches. The 2,506-byte runtime fetched again at block 3550399 is byte-identical to mainnet and hashes to the recorded value. The primary verified source has Keccak-256 0x1f4c21cc25452d31a351c1b6d8758dc114dad75a3ab15003bdea27295da96fe2 and is byte-identical to the source in Figment's repository at 53fa2d588e33dca6d8a625a169ce4f4290b34fb6."
+        }
+      },
+      "proxy": {
+        "type": "none",
+        "upgradeability": "not-proxy",
+        "evidence": "Sourcify reports isProxy=false. The verified FigmentEth2DepositorV1 runtime implements the reviewed selector directly, and the source contains no delegatecall-based routing or code-upgrade mechanism."
+      },
+      "stateRefs": [],
+      "displayBindings": [
+        {
+          "formats": [
+            "deposit(bytes[] pubkeys, bytes[] withdrawal_credentials, bytes[] signatures, bytes32[] deposit_data_roots, uint256[] amounts_gwei)"
+          ],
+          "result": "not-required",
+          "rationale": "The non-proxy implementation and its canonical deposit-contract target are immutable. deposit reads the mutable paused flag, but that flag can only make the call execute or revert; it cannot alter the operation or fields for an executing call. Ownership can change who toggles that flag but cannot change the target or deposit behavior. The downstream deposit tree and count can affect execution availability, not the displayed authorization. No mutable EVM state can change the displayed intent or fields, so no state reference is required. This result does not cure F-001's calldata- and consensus-state-dependent outcome."
+        }
+      ],
+      "notes": "Observation timestamp: 2026-09-03T13:21:12Z. At this block, owner() returned 0x87076222faE7397f497c8905b41b97a8Ea60C8d9, paused() returned false, and the immutable depositContract() returned 0x00000000219ab540356cBB839Cbe05303d7705Fa. Sourcify records deployment transaction 0x53506b453cbd0940e99925f18b6cd46ccf81c85d9656b5f11e8627c78e408a45 at block 1419396, transaction index 32, from the same owner address."
+    }
+  ]
+}

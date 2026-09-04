@@ -189,7 +189,11 @@ use EVM success alone as evidence of an outcome completed by another system.
 ## Findings
 
 List blocking and non-blocking findings using the IDs in `audit.json`. If none,
-write “None.”
+write “None.” For each finding, put its severity and blocking status on
+separate lines using this format:
+
+Severity: **High**\
+Blocking: **Yes**
 
 ## Coverage Limitations
 
