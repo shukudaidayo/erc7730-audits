@@ -1,0 +1,10 @@
+{
+  "$schema": "../../../../schemas/tests-v2.schema.json",
+  "descriptor": "./descriptor.json",
+  "dataProvider": {
+    "tokens": {},
+    "addressNames": {},
+    "ensNames": {}
+  },
+  "tests": []
+}
