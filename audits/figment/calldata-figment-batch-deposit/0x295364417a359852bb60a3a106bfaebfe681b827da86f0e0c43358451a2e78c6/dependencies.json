@@ -1,0 +1,6 @@
+{
+  "$schema": "../../../../schemas/dependencies-v1.schema.json",
+  "formatVersion": "1.0.0",
+  "descriptorHash": "0x295364417a359852bb60a3a106bfaebfe681b827da86f0e0c43358451a2e78c6",
+  "dependencies": []
+}

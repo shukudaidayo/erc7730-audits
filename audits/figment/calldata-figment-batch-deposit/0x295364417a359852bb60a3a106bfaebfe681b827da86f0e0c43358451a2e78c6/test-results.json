@@ -1,0 +1,115 @@
+{
+  "runner": "@ethereum-sourcify/clear-signing-test-runner",
+  "implementation": "@ethereum-sourcify/clear-signing@0.2.2",
+  "cases": [
+    {
+      "description": "Render a real 32 ETH existing-validator top-up on Ethereum mainnet",
+      "status": "pass",
+      "rendered": {
+        "intent": "Stake ETH",
+        "fields": [
+          {
+            "label": "Validator Public Key",
+            "value": "0xaf611d47ebf55fd5f5c9037959e93e5a42f5e3e97478362191e5600711216867b1bf67ead7a3ff42b63532a8a1948507"
+          },
+          {
+            "label": "Withdraw Credentials",
+            "value": "0x0000000000000000000000000000000000000000000000000000000000000000"
+          },
+          {
+            "label": "Amount to Deposit",
+            "value": "32ETH"
+          }
+        ],
+        "owner": "Figment"
+      }
+    },
+    {
+      "description": "Render the mainnet top-up calldata for the Hoodi deployment",
+      "status": "pass",
+      "rendered": {
+        "intent": "Stake ETH",
+        "fields": [
+          {
+            "label": "Validator Public Key",
+            "value": "0xaf611d47ebf55fd5f5c9037959e93e5a42f5e3e97478362191e5600711216867b1bf67ead7a3ff42b63532a8a1948507"
+          },
+          {
+            "label": "Withdraw Credentials",
+            "value": "0x0000000000000000000000000000000000000000000000000000000000000000"
+          },
+          {
+            "label": "Amount to Deposit",
+            "value": "32ETH"
+          }
+        ],
+        "owner": "Figment"
+      }
+    },
+    {
+      "description": "Render a two-validator batch at the per-validator minimum and maximum",
+      "status": "pass",
+      "rendered": {
+        "intent": "Stake ETH",
+        "fields": [
+          {
+            "label": "Validator Public Key",
+            "value": "0xaf611d47ebf55fd5f5c9037959e93e5a42f5e3e97478362191e5600711216867b1bf67ead7a3ff42b63532a8a1948507"
+          },
+          {
+            "label": "Validator Public Key",
+            "value": "0x826da6fb3cb99e3e4e0287c257a4c887e8ca3e76249a7ef1b98b3e659573a6dae8f6076313e4e6c1323c8847841ca7e5"
+          },
+          {
+            "label": "Withdraw Credentials",
+            "value": "0x0000000000000000000000000000000000000000000000000000000000000000"
+          },
+          {
+            "label": "Withdraw Credentials",
+            "value": "0x0000000000000000000000000000000000000000000000000000000000000000"
+          },
+          {
+            "label": "Amount to Deposit",
+            "value": "1ETH"
+          },
+          {
+            "label": "Amount to Deposit",
+            "value": "2048ETH"
+          }
+        ],
+        "owner": "Figment"
+      }
+    },
+    {
+      "description": "Render zero transaction value with one ETH declared in calldata",
+      "status": "pass",
+      "rendered": {
+        "intent": "Stake ETH",
+        "fields": [
+          {
+            "label": "Validator Public Key",
+            "value": "0xaf611d47ebf55fd5f5c9037959e93e5a42f5e3e97478362191e5600711216867b1bf67ead7a3ff42b63532a8a1948507"
+          },
+          {
+            "label": "Withdraw Credentials",
+            "value": "0x0000000000000000000000000000000000000000000000000000000000000000"
+          },
+          {
+            "label": "Amount to Deposit",
+            "value": "1ETH"
+          }
+        ],
+        "owner": "Figment"
+      }
+    },
+    {
+      "description": "Render the empty-array and zero-value boundary",
+      "status": "pass",
+      "rendered": {
+        "intent": "Stake ETH",
+        "fields": [],
+        "owner": "Figment"
+      }
+    }
+  ]
+}

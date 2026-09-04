@@ -1,0 +1,28 @@
+{
+  "formatVersion": "1.0.0",
+  "source": "https://chainid.network/chains_mini.json",
+  "chainIds": [
+    1,
+    560048
+  ],
+  "entries": [
+    {
+      "chainId": 1,
+      "name": "Ethereum Mainnet",
+      "nativeCurrency": {
+        "name": "Ether",
+        "symbol": "ETH",
+        "decimals": 18
+      }
+    },
+    {
+      "chainId": 560048,
+      "name": "Ethereum Hoodi",
+      "nativeCurrency": {
+        "name": "Hoodi Ether",
+        "symbol": "ETH",
+        "decimals": 18
+      }
+    }
+  ]
+}
